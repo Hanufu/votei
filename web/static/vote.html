@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votei</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        width: 100%;
+        height: 100%;
+        font-family: "Poppins", sans-serif;
+        background-color: #F5F5DC;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        overflow-y: auto; /* Adiciona rolagem vertical quando necessário */
+    }
+
+    .header {
+        width: 100%;
+        max-width: 1200px;
+        margin-bottom: 20px;
+        margin-top: 10rem;
+    }
+
+    h1 {
+        font-size: 3rem;
+        font-family: "Bebas Neue", sans-serif;
+        color: #333333;
+        margin-bottom: 0.5rem; /* Ajusta o espaçamento abaixo do título */
+    }
+
+    h2 {
+        font-size: 18px;
+        color: #707070;
+        font-weight: bold;
+        white-space: normal; 
+        display: block;
+        max-width: 100%;
+        line-height: 1.4;
+        margin-bottom: 2rem;
+        margin-top: 0.5rem; /* Adiciona um espaço acima do subtítulo */
+    }
+
+    main {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        column-gap: 1rem;
+    }
+
+    .card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around; /* Espaço entre os campos */
+        align-items: center;
+        width: 180px; /* Largura ajustada para melhor visualização */
+        height: 258px;
+        border-radius: 12px;
+        background-color: #15B037;
+        color: #FFFFFF;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 6px 12px 6px #868686;
+        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+        background-color: #1AB045; /* Altere a cor conforme necessário */
+        transform: scale(1.05);
+        box-shadow: 8px 16px 8px #707070;
+    }
+
+    .photoArea {
+        width: 154px;
+        height: 154px;
+        background-color: #399257;
+        border-radius: 6px 6px 0 0;
+        overflow: hidden; /* Garantir que o conteúdo não saia do contêiner */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .photoArea img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Ajusta a imagem para preencher o contêiner */
+    }
+
+    .voteArea {
+        width: 90%;
+        height: 71px;
+        color: #FFFFFF;
+        background-color: #51BC68;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .voteNumber {
+        font-size: 82px;
+        font-family: "Bebas Neue", sans-serif;
+        text-align: center;
+        padding-top: 0.4rem;
+    }
+
+    .card13 {
+        background-color: #C30101;
+    }
+
+    .card13 > .photoArea {
+        background-color: #880404;
+    }
+
+    .card13 > .voteArea {
+        background-color: #AC4444;
+    }
+
+    .card13:hover {
+        background-color: #c71b1b; /* Altere a cor conforme necessário */
+        transform: scale(1.05);
+        box-shadow: 8px 16px 8px #707070;
+    }
+
+    button {
+        max-width: 200px;
+        max-height: 60px;
+        background-color: #FFFFFF;
+        color: #707070;
+        font-size: 18px;
+        padding: 0.5rem 1rem;
+        margin: 0.5rem;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        max-width: 250px;
+        height: 50px;
+        border-radius: 12px;
+        color: #707070;
+        font-weight: bold;
+        font-family: "Poppins", sans-serif;
+        box-shadow: 2px 2px 8px #a1a1a1;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-sizing: border-box;
+        background-color: #FFFFFF;
+        margin-top: 3rem;
+        margin-bottom: 4rem;
+    }
+
+    button:hover {
+        background-color: #f8f8f8;
+        color: #333333;
+        transform: scale(1.05);
+    }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Escolha SEU TIME</h1>
+        <h2>
+            Vote e saiba quem está na frente nesta disputa!
+        </h2>
+    </div>
+    <main>
+        <div class="card">
+            <div class="photoArea">
+                <img src="/web/assets/Anisio.jpg" alt="Candidato Anisio">
+            </div>
+            <div class="voteArea">
+                <p class="voteNumber">45</p>
+            </div>
+        </div>
+        <div class="card card13">
+            <div class="photoArea">
+                <img src="/web/assets/Vilinei.jpg" alt="Candidato Vilinei">
+            </div>
+            <div class="voteArea">
+                <p class="voteNumber">13</p>
+            </div>
+        </div>
+    </main>
+    <button>Branco</button>
+</body>
+</html>

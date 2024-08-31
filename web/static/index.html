@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votei</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: "Poppins", sans-serif;
+    background-color: #F5F5DC;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    text-align: center;
+    overflow: hidden; /* Evita rolagem */
+}
+
+.header {
+    width: 100%;
+    max-width: 1200px;
+    text-align: left;
+    position: relative;
+    padding-top: 1rem;
+    padding-left: 2rem;
+}
+
+h1 {
+    font-size: 128px;
+    font-family: "Bebas Neue", sans-serif;
+    color: #333333;
+    margin-bottom: -20px;
+}
+
+h2 {
+    font-size: 2rem;
+    color: #707070;
+    font-weight: bold;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    display: inline-block;
+    max-width: 100%;
+    line-height: 1.2; 
+    margin: 0; 
+    padding: 0; 
+}
+
+
+
+.typing-text {
+    display: inline;
+    position: relative;
+    padding-right: 0.25em; 
+}
+
+.login {
+    width: 100%;
+    max-width: 1200px;
+    text-align: left;
+    margin-top: 1rem;
+    margin-left: 2rem;
+}
+
+.acessoCom {
+    font-size: 24px;
+    color: #707070;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+button {
+    font-size: 18px;
+    padding: 0.5rem 1rem;
+    margin: 0.5rem;
+    border: none;
+    cursor: pointer;
+    width: 100%; 
+    max-width: 250px; 
+    height: 50px;
+    border-radius: 12px;
+    color: #FFFFFF;
+    font-weight: bold;
+    font-family: "Poppins", sans-serif;
+    box-shadow: 2px 2px 8px #a1a1a1;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-sizing: border-box;
+}
+button > a {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+#facebookButton {
+    background-color: #0075FF;
+}
+
+#facebookButton:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+#googleButton {
+    background-color: #FFFFFF;
+    color: transparent;
+    position: relative;
+}
+
+#googleButton span {
+    background-image: linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+#googleButton:hover {
+    background-color: #f8f8f8;
+    transform: scale(1.05);
+}
+
+#semLoginButton {
+    background-color: #8BCEE4;
+}
+
+#semLoginButton:hover {
+    background-color: #7ab2d3;
+    transform: scale(1.05);
+}
+
+.entrar-sem-login {
+    width: 100%;
+    max-width: 1200px;
+    text-align: left;
+    margin-top: 2rem;
+}
+
+.termosDeUso {
+    max-width: 90vw; 
+    font-weight: bold;
+    font-size: 16px;
+    color: #707070;
+    margin-top: 1rem;
+    text-align: center; 
+    padding-left: 2rem;
+    box-sizing: border-box; 
+}
+
+.termosDeUso a {
+    color: #707070;
+    text-decoration: underline;
+}
+image {
+    max-width: 151px;
+    max-height: 154px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>VOTEI</h1>
+        <h2 id="animatedText">
+            <span class="typing-text">Entenda, avalie, vote.</span>
+            <span class="fixed-cursor">
+                
+            </span>
+        </h2>
+    </div>
+    <div class="login">
+        <p class="acessoCom">Acesse com:</p>
+        <button id="facebookButton"><a href="/web/static/vote.html">Entrar com Facebook</a></button>
+        <br/>
+        <button id="googleButton"><span>Entrar com Google</span></button>
+        <br/>
+        <button id="semLoginButton">Acesso sem Login</button>
+    </div>
+    <div class="entrar-sem-login">
+        <p class="termosDeUso">
+            <a href="/web/static/termos.html">Ao usar o Votei, você aceita nossos Termos de Uso e Política de Privacidade</a>
+        </p>
+    </div>
+    <script>
+        function typeWriter(element, text, speed, pause) {
+            let i = 0;
+            let isDeleting = false;
+            let timer;
+
+            function type() {
+                if (i < text.length && !isDeleting) {
+                    element.innerText += text.charAt(i);
+                    i++;
+                    timer = setTimeout(type, speed);
+                } else if (i > 0 && isDeleting) {
+                    element.innerText = text.substring(0, i - 1);
+                    i--;
+                    timer = setTimeout(type, speed / 2);
+                } else if (i === text.length) {
+                    isDeleting = true;
+                    timer = setTimeout(type, pause);
+                } else if (i === 0 && isDeleting) {
+                    isDeleting = false;
+                    timer = setTimeout(type, pause);
+                }
+            }
+
+            type();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const typingText = document.querySelector('.typing-text');
+            if (typingText) {
+                // Apaga e reescreve o texto somente se o JS estiver habilitado
+                const text = typingText.innerText;
+                typingText.innerText = ''; // Limpa o texto inicial
+                typeWriter(typingText, text, 100, 1500);
+            }
+        });
+    </script>
+</body>
+</html>
