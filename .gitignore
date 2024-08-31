@@ -1,0 +1,30 @@
+# Binaries
+bin/
+build/
+*.exe
+*.out
+*.app
+
+# Go build cache
+*.cache
+*.log
+
+# Dependency directories
+vendor/
+
+# Environment files
+.env
+
+# IDEs and editors
+.vscode/
+.idea/
+*.project
+*.classpath
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+
+# Documentation
+docs/
