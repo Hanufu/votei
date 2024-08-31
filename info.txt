@@ -1,0 +1,52 @@
+myapp/
+├── cmd/
+│   └── myapp/
+│       └── main.go         # Arquivo principal que inicia o app
+├── internal/
+│   ├── config/             # Configurações do projeto
+│   │   └── config.go
+│   ├── database/           # Código relacionado ao banco de dados
+│   │   └── db.go
+│   ├── handlers/           # Handlers para as requisições HTTP
+│   │   └── handlers.go
+│   ├── models/             # Definições dos modelos (estrutura dos dados)
+│   │   └── models.go
+│   ├── repository/         # Interação com o banco de dados
+│   │   └── user_repository.go
+│   ├── router/             # Configuração das rotas
+│   │   └── router.go
+│   ├── services/           # Lógica de negócios (ex: validações, regras)
+│   │   └── user_service.go
+│   ├── middleware/         # Middleware para tratamento de requisições
+│   │   └── auth.go
+│   └── utils/              # Utilidades, funções auxiliares
+│       └── utils.go
+├── pkg/                    # Pacotes públicos reutilizáveis
+│   └── somepackage/
+│       └── somepackage.go
+├── web/
+│   ├── static/             # Arquivos estáticos (HTML, CSS, JS)
+│   └── templates/          # Templates HTML
+├── go.mod                  # Gerenciamento de dependências
+└── go.sum                  # Checksum das dependências
+Explicação dos Diretórios
+cmd/: O ponto de entrada para a aplicação. Aqui ficam os executáveis. Cada subdiretório dentro de cmd/ contém um executável diferente, e o arquivo main.go inicia o servidor.
+
+internal/: Contém o código da aplicação que não será exposto para outros projetos. Organizado em vários subdiretórios:
+
+config/: Contém as configurações da aplicação, como leitura de variáveis de ambiente ou arquivos .env.
+database/: Configurações de conexão com o banco de dados e inicialização de conexões.
+handlers/: Funções que respondem às requisições HTTP, geralmente com interação mínima na lógica de negócios.
+models/: Estruturas que representam as tabelas ou documentos do banco de dados.
+repository/: Interage diretamente com o banco de dados (queries, execuções).
+router/: Define as rotas HTTP e a configuração do roteamento.
+services/: Contém a lógica de negócios e o processamento de dados.
+middleware/: Funções intermediárias para processar requisições, como autenticação e logging.
+utils/: Funções utilitárias genéricas, como formatação de datas ou validações.
+pkg/: Código que pode ser reutilizado em outros projetos ou pacotes externos. Este código não depende do aplicativo específico, mas pode ser usado em vários projetos.
+
+web/: Contém arquivos relacionados à interface com o usuário:
+
+static/: Arquivos estáticos, como CSS, JS, e imagens.
+templates/: Arquivos HTML com templates para renderização.
+go.mod e go.sum: Gerenciam as dependências do projeto. O arquivo go.mod especifica as dependências e a versão do Go, e o go.sum verifica as dependências instaladas.
