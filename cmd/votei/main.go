@@ -35,9 +35,10 @@ func main() {
 	// Configuração das rotas
 	router.SetupRoutes(e)
 
-	// Escutando na porta 80 para HTTP
-	err = e.Start(":80")
+	// Usando HTTPS com os certificados autoassinados
+	err = e.StartTLS(":443", "cert.pem", "key.pem")
 	if err != nil {
-		log.Fatalf("Erro ao iniciar o servidor HTTP: %v", err)
+		log.Fatalf("Erro ao iniciar o servidor HTTPS: %v", err)
 	}
 }
+

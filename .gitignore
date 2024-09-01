@@ -29,4 +29,5 @@ vendor/
 # Documentation
 docs/
 
+*.pem
 backupMainFile.go
