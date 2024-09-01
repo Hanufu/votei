@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"text/template"
 
 	"github.com/Hanufu/votei/internal/config"
@@ -34,5 +35,9 @@ func main() {
 	// Configuração das rotas
 	router.SetupRoutes(e)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	// Escutando na porta 80 para HTTP
+	err = e.Start(":80")
+	if err != nil {
+		log.Fatalf("Erro ao iniciar o servidor HTTP: %v", err)
+	}
 }
