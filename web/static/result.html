@@ -4,35 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultado dos Votos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            color: #333;
-            padding: 20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: "Poppins", sans-serif;
+            background-color: #F5F5DC; /* Cor de fundo clara */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
+            overflow: hidden;
         }
+
         h1 {
-            color: #4CAF50;
+            font-size: 6rem; /* Tamanho maior para desktop */
+            font-family: "Bebas Neue", sans-serif;
+            color: #333333;
+            margin-bottom: 1rem;
         }
+
         p {
-            font-size: 18px;
+            font-size: 1.2rem;
+            color: #333333; /* Cor escura para o texto */
+            text-align: left; /* Alinha o texto à esquerda */
+            margin: 0.5rem 0;
+            max-width: 80%; /* Limita a largura máxima para melhor visualização */
+            width: 100%;
+            padding-left: 20px; /* Espaçamento à esquerda */
+            padding-right: 20px; /* Espaçamento à direita */
         }
+
         .message {
-            background-color: #ffeb3b;
-            padding: 10px;
+            background-color: #8BCEE4; /* Cor de fundo do estilo dos botões */
+            color: #333333; /* Cor do texto */
+            padding: 8px; /* Reduz o padding */
+            border-radius: 8px;
             margin-bottom: 20px;
             display: inline-block;
+            font-size: 1rem;
+            box-shadow: 2px 2px 8px #a1a1a1;
+            font-family: "Poppins", sans-serif;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 80vh; /* Limita a altura máxima do gráfico */
+            height: auto;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 4rem; /* Tamanho intermediário para dispositivos móveis */
+            }
+
+            p {
+                font-size: 1rem;
+                max-width: 100%; /* Garante que o texto não exceda a largura da tela em dispositivos menores */
+                padding-left: 10px; /* Reduz o padding em dispositivos menores */
+                padding-right: 10px; /* Reduz o padding em dispositivos menores */
+            }
+
+            .message {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Resultado dos Votos</h1>
-    {{ if .Message }}
-    <div class="message"><strong>{{ .Message }}</strong></div>
-    {{ end }}
-    <p>Votos em branco: {{ .BlankVotes }}</p>
-    <p>Votos no 45: {{ .Votes45 }}</p>
-    <p>Votos no 13: {{ .Votes13 }}</p>
+    <main>
+        {{ if .Message }}
+        <div class="message"><strong>{{ .Message }}</strong></div>
+        {{ end }}
+        <div>
+            <p>Votos em branco: {{ .BlankVotes }}</p>
+            <p>Votos no 45: {{ .Votes45 }}</p>
+            <p>Votos no 13: {{ .Votes13 }}</p>
+        </div>
+        <!-- Canvas para o gráfico -->
+        <canvas id="votesChart"></canvas>
+    </main>
+    <!-- Adiciona a biblioteca Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const ctx = document.getElementById('votesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Votos em Branco', 'Anisio Viana (45)', 'Vilinei Braga (13)'],
+                    datasets: [{
+                        label: 'Número de Votos',
+                        data: ["{{ .BlankVotes }}", "{{ .Votes45 }}", "{{ .Votes13 }}"],
+                        backgroundColor: ['#FFFFFF', '#15B037', '#C30101'],
+                        borderColor: ['#CCCCCC', '#0C9B2D', '#A20000'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        },
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    if (value === 0) return '0';
+                                    return value.toLocaleString(); // Formata números com separador de milhar
+                                }
+                            },
+                            // Define o intervalo e o máximo dos valores no eixo Y
+                            suggestedMin: 0,
+                            suggestedMax: Math.max(
+                                "{{ .BlankVotes }}",
+                                "{{ .Votes45 }}",
+                                "{{ .Votes13 }}"
+                            ) * 1.1, // Adiciona um pouco mais de espaço no topo
+                            stepSize: 5000 // Ajusta o passo dos valores no eixo Y
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
