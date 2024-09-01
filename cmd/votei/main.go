@@ -6,77 +6,73 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	_ "github.com/mattn/go-sqlite3"
 	_ "modernc.org/sqlite"
 )
 
-// Constantes e variáveis
 const (
 	staticPath = "../../web/static/"
 	indexFile  = "index.html"
 	voteFile   = "vote.html"
 	termosFile = "termos.html"
-	dbFile     = "votes.db"
+	resultFile = "result.html"
+	dbFile     = "../../database/votes.db"
 )
 
 var (
-	db *sql.DB
+	db     *sql.DB
+	dbLock sync.Mutex
 )
 
-// Candidate estrutura para candidatos
-type Candidate struct {
-	Number      int
-	VoteNumbers int64
-}
-
-// Vote estrutura para armazenar informações do voto
 type Vote struct {
-	IPAddress string
-	UserAgent string
-	CookieID  string
-	Timestamp time.Time
-	Referer   string
-	Language  string
-	Browser   string
+	IPAddress       string    `json:"ip_address"`
+	UserAgent       string    `json:"user_agent"`
+	CookieID        string    `json:"cookie_id"`
+	Timestamp       time.Time `json:"timestamp"`
+	Referer         string    `json:"referer"`
+	Language        string    `json:"language"`
+	Browser         string    `json:"browser"`
+	CandidateNumber int       `json:"candidate_number"`
+	Latitude        string    `json:"latitude"`
+	Longitude       string    `json:"longitude"`
 }
 
-// Função principal
+var voteCounts = struct {
+	sync.RWMutex
+	counts map[int]int
+}{
+	counts: make(map[int]int),
+}
+
 func main() {
 	var err error
-	db, err = sql.Open("sqlite3", dbFile)
+	db, err = sql.Open("sqlite", dbFile)
 	if err != nil {
 		fmt.Println("Erro ao abrir o banco de dados:", err)
 		return
 	}
 	defer db.Close()
 
-	// Criação das tabelas se não existirem
-	createTables()
+	createVotesTable()
+	loadVoteCounts() // Carregue a contagem de votos após criar a tabela
 
 	e := echo.New()
 
-	e.Static("/assets", "/../../web/assets")
-
+	e.Static("/assets", staticPath+"assets")
 	e.GET("/", serveFile(indexFile))
 	e.GET("/vote", serveFile(voteFile))
 	e.GET("/termos-uso-privacidade", serveFile(termosFile))
 	e.POST("/vote", voteHandler)
-	e.GET("/result", handleResult)
+	e.GET("/result", resultHandler)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
-// Criação das tabelas se não existirem
-func createTables() {
-	createCandidatesTable := `CREATE TABLE IF NOT EXISTS candidates (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        number INTEGER NOT NULL,
-        vote_numbers INTEGER DEFAULT 0
-    );`
+func createVotesTable() {
 	createVotesTable := `CREATE TABLE IF NOT EXISTS votes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         ip_address TEXT,
@@ -85,26 +81,22 @@ func createTables() {
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         referer TEXT,
         language TEXT,
-        browser TEXT
+        browser TEXT,
+        candidate_number INTEGER,
+        latitude TEXT,
+        longitude TEXT
     );`
-	_, err := db.Exec(createCandidatesTable)
-	if err != nil {
-		fmt.Println("Erro ao criar a tabela de candidatos:", err)
-	}
-	_, err = db.Exec(createVotesTable)
-	if err != nil {
+	if _, err := db.Exec(createVotesTable); err != nil {
 		fmt.Println("Erro ao criar a tabela de votos:", err)
 	}
 }
 
-// Handler para servir arquivos estáticos
 func serveFile(fileName string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		return c.File(staticPath + fileName)
 	}
 }
 
-// Gera um identificador único baseado em IP e User-Agent
 func getUniqueIdentifier(c echo.Context) string {
 	ip := c.Request().Header.Get("X-Forwarded-For")
 	if ip == "" {
@@ -114,7 +106,6 @@ func getUniqueIdentifier(c echo.Context) string {
 	return ip + "-" + userAgent
 }
 
-// Gera e recupera o ID do cookie do usuário
 func generateCookieID(c echo.Context) string {
 	cookie, err := c.Cookie("voter_id")
 	if err != nil {
@@ -124,7 +115,7 @@ func generateCookieID(c echo.Context) string {
 				Name:    "voter_id",
 				Value:   newID,
 				Path:    "/",
-				Expires: time.Now().Add(24 * time.Hour), // Expira em 24 horas
+				Expires: time.Now().Add(24 * time.Hour),
 			})
 			return newID
 		}
@@ -133,35 +124,33 @@ func generateCookieID(c echo.Context) string {
 	return cookie.Value
 }
 
-// Verifica se o identificador ou cookie já votou
 func hasVoted(identifier string) bool {
 	var count int
-	err := db.QueryRow("SELECT COUNT(*) FROM votes WHERE ip_address = ? OR cookie_id = ?", identifier, identifier).Scan(&count)
-	if err != nil {
+	// Verifica se o identificador já está presente na tabela de votos
+	if err := db.QueryRow("SELECT COUNT(*) FROM votes WHERE ip_address = ? OR cookie_id = ?", identifier, identifier).Scan(&count); err != nil {
 		fmt.Println("Erro ao verificar votos:", err)
 		return false
 	}
 	return count > 0
 }
-
-// Registra o voto com base no identificador e no cookie
 func registerVote(vote Vote) {
-	_, err := db.Exec("INSERT INTO votes (ip_address, user_agent, cookie_id, timestamp, referer, language, browser) VALUES (?, ?, ?, ?, ?, ?, ?)",
-		vote.IPAddress, vote.UserAgent, vote.CookieID, vote.Timestamp, vote.Referer, vote.Language, vote.Browser)
+	dbLock.Lock()
+	defer dbLock.Unlock()
+
+	// Insere o voto no banco de dados
+	_, err := db.Exec("INSERT INTO votes (ip_address, user_agent, cookie_id, timestamp, referer, language, browser, candidate_number, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+		vote.IPAddress, vote.UserAgent, vote.CookieID, vote.Timestamp, vote.Referer, vote.Language, vote.Browser, vote.CandidateNumber, vote.Latitude, vote.Longitude)
 	if err != nil {
 		fmt.Println("Erro ao registrar voto:", err)
+		return
 	}
+
+	// Atualiza a contagem de votos em memória
+	voteCounts.Lock()
+	defer voteCounts.Unlock()
+	voteCounts.counts[vote.CandidateNumber]++
 }
 
-// Atualiza o número de votos do candidato
-func updateVoteCount(candidateNumber int) {
-	_, err := db.Exec("UPDATE candidates SET vote_numbers = vote_numbers + 1 WHERE number = ?", candidateNumber)
-	if err != nil {
-		fmt.Println("Erro ao atualizar contagem de votos:", err)
-	}
-}
-
-// Imprime o log com informações detalhadas
 func logVote(vote Vote) {
 	fmt.Printf("Voto registrado:\n")
 	fmt.Printf("IP: %s\n", vote.IPAddress)
@@ -171,10 +160,36 @@ func logVote(vote Vote) {
 	fmt.Printf("Referer: %s\n", vote.Referer)
 	fmt.Printf("Language: %s\n", vote.Language)
 	fmt.Printf("Browser: %s\n", vote.Browser)
+	fmt.Printf("Número do Candidato: %d\n", vote.CandidateNumber)
+	fmt.Printf("Latitude: %s\n", vote.Latitude)
+	fmt.Printf("Longitude: %s\n", vote.Longitude)
 }
 
-// Handler de votação
-// Handler de votação
+func resultHandler(c echo.Context) error {
+	message := c.QueryParam("message")
+
+	voteCounts.RLock()
+	defer voteCounts.RUnlock()
+
+	// Monta a página HTML com a contagem de votos e a mensagem, se houver
+	html := `<html>
+        <head><title>Resultado dos Votos</title></head>
+        <body>
+            <h1>Resultado dos Votos</h1>`
+
+	if message != "" {
+		html += `<p><strong>` + message + `</strong></p>`
+	}
+
+	html += `<p>Votos em branco: ` + strconv.Itoa(voteCounts.counts[0]) + `</p>
+            <p>Votos no 45: ` + strconv.Itoa(voteCounts.counts[45]) + `</p>
+            <p>Votos no 13: ` + strconv.Itoa(voteCounts.counts[13]) + `</p>
+        </body>
+    </html>`
+
+	return c.HTML(http.StatusOK, html)
+}
+
 func voteHandler(c echo.Context) error {
 	identifier := getUniqueIdentifier(c)
 	cookieID := generateCookieID(c)
@@ -183,7 +198,6 @@ func voteHandler(c echo.Context) error {
 	referer := c.Request().Header.Get("Referer")
 	acceptLanguage := c.Request().Header.Get("Accept-Language")
 
-	// Determina o navegador (simplificação, pode ser aprimorada)
 	var browser string
 	if userAgent != "" {
 		if strings.Contains(userAgent, "Firefox") {
@@ -197,66 +211,92 @@ func voteHandler(c echo.Context) error {
 		}
 	}
 
-	// Cria a estrutura de voto
-	vote := Vote{
-		IPAddress: ip,
-		UserAgent: userAgent,
-		CookieID:  cookieID,
-		Timestamp: time.Now(),
-		Referer:   referer,
-		Language:  acceptLanguage,
-		Browser:   browser,
-	}
-
-	// Verifica se o identificador ou o cookie já votou
-	if hasVoted(identifier) || hasVoted(cookieID) {
-		return c.JSON(http.StatusForbidden, "Você já votou.")
-	}
-
-	// Recebe o número do candidato do input
 	candidateNumber := c.FormValue("candidate_number")
+	latitude := c.FormValue("latitude")
+	longitude := c.FormValue("longitude")
 
-	// Verifica se o número é "00" para voto em branco
 	var candidateNumberInt int
 	if candidateNumber == "00" {
-		candidateNumberInt = 0 // Número 0 para voto em branco
+		candidateNumberInt = 0
 	} else {
 		var err error
 		candidateNumberInt, err = strconv.Atoi(candidateNumber)
 		if err != nil {
-			return c.JSON(http.StatusBadRequest, "Número do candidato inválido.")
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Número do candidato inválido."})
 		}
 	}
 
-	// Registra o voto
+	// Verifique se o usuário já votou
+	if hasVoted(identifier) || hasVoted(cookieID) {
+		// Redirecione para a página de resultados com uma mensagem
+		return c.Redirect(http.StatusSeeOther, "/result?message=Você já votou antes! Seu voto já foi registrado e não será computado novamente.")
+	}
+
+	// Registre o voto se ainda não foi registrado
+	vote := Vote{
+		IPAddress:       ip,
+		UserAgent:       userAgent,
+		CookieID:        cookieID,
+		Timestamp:       time.Now(),
+		Referer:         referer,
+		Language:        acceptLanguage,
+		Browser:         browser,
+		CandidateNumber: candidateNumberInt,
+		Latitude:        latitude,
+		Longitude:       longitude,
+	}
+
 	registerVote(vote)
-
-	// Atualiza a contagem de votos do respectivo candidato
-	updateVoteCount(candidateNumberInt)
-
-	// Imprime o log com informações detalhadas
 	logVote(vote)
 
-	return c.String(http.StatusOK, "Voto registrado com sucesso.")
+	return c.Redirect(http.StatusSeeOther, "/result")
 }
 
-// Handler para retornar os resultados dos candidatos
 func handleResult(c echo.Context) error {
-	rows, err := db.Query("SELECT number, vote_numbers FROM candidates")
+	rows, err := db.Query("SELECT candidate_number, COUNT(*) as vote_count FROM votes GROUP BY candidate_number ORDER BY vote_count DESC")
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, "Erro ao consultar resultados")
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao obter resultados."})
 	}
 	defer rows.Close()
 
-	results := make(map[int]int64)
+	type Result struct {
+		CandidateNumber int   `json:"candidate_number"`
+		VoteCount       int64 `json:"vote_count"`
+	}
+
+	var results []Result
 	for rows.Next() {
-		var number int
-		var voteNumbers int64
-		if err := rows.Scan(&number, &voteNumbers); err != nil {
-			return c.JSON(http.StatusInternalServerError, "Erro ao processar resultados")
+		var result Result
+		if err := rows.Scan(&result.CandidateNumber, &result.VoteCount); err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao processar resultados."})
 		}
-		results[number] = voteNumbers
+		results = append(results, result)
 	}
 
 	return c.JSON(http.StatusOK, results)
+}
+
+func loadVoteCounts() {
+	voteCounts.Lock()
+	defer voteCounts.Unlock()
+
+	rows, err := db.Query("SELECT candidate_number, COUNT(*) as vote_count FROM votes GROUP BY candidate_number")
+	if err != nil {
+		fmt.Println("Erro ao carregar a contagem de votos:", err)
+		return
+	}
+	defer rows.Close()
+
+	// Limpe a contagem de votos atual
+	voteCounts.counts = make(map[int]int)
+
+	for rows.Next() {
+		var candidateNumber int
+		var voteCount int64
+		if err := rows.Scan(&candidateNumber, &voteCount); err != nil {
+			fmt.Println("Erro ao processar resultados:", err)
+			return
+		}
+		voteCounts.counts[candidateNumber] = int(voteCount)
+	}
 }

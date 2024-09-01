@@ -8,158 +8,168 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
     <style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        /* Seu estilo existente */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-html, body {
-    width: 100%;
-    height: 100%;
-    font-family: "Poppins", sans-serif;
-    background-color: #F5F5DC;
-    display: flex;
-    justify-content: space-evenly;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    overflow-y: auto;
-}
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: "Poppins", sans-serif;
+            background-color: #F5F5DC;
+            display: flex;
+            justify-content: space-evenly;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            overflow-y: auto;
+        }
 
-.header {
-    width: 100%;
-    max-width: 1200px;
-    margin: 10rem 0 20px;
-}
+        .header {
+            width: 100%;
+            max-width: 1200px;
+            margin: 10rem 0 20px;
+        }
 
-h1 {
-    font-size: 3rem;
-    font-family: "Bebas Neue", sans-serif;
-    color: #333333;
-    margin-bottom: 0.5rem;
-}
+        h1 {
+            font-size: 3rem;
+            font-family: "Bebas Neue", sans-serif;
+            color: #333333;
+            margin-bottom: 0.5rem;
+        }
 
-h2 {
-    font-size: 18px;
-    color: #707070;
-    font-weight: bold;
-    white-space: normal;
-    max-width: 100%;
-    line-height: 1.4;
-    margin: 0.5rem 0 2rem;
-}
+        h2 {
+            font-size: 18px;
+            color: #707070;
+            font-weight: bold;
+            white-space: normal;
+            max-width: 100%;
+            line-height: 1.4;
+            margin: 0.5rem 0 2rem;
+        }
 
-main {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    column-gap: 1rem;
-}
+        main {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            column-gap: 1rem;
+        }
 
-.card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    align-items: center;
-    width: 180px;
-    height: 258px;
-    border-radius: 12px;
-    background-color: #15B037;
-    color: #FFFFFF;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 6px 12px 6px #868686;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    border: none;
-    cursor: pointer;
-}
+        .card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            width: 180px;
+            height: 258px;
+            border-radius: 12px;
+            background-color: #15B037;
+            color: #FFFFFF;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 6px 12px 6px #868686;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            border: none;
+            cursor: pointer;
+            opacity: 0.5;
+        }
 
-.card:hover {
-    background-color: #1AB045;
-    transform: scale(1.05);
-    box-shadow: 8px 16px 8px #707070;
-}
+        .card.enabled {
+            cursor: pointer;
+            opacity: 1;
+        }
 
-.photoArea {
-    width: 154px;
-    height: 154px;
-    background-color: #399257;
-    border-radius: 6px 6px 0 0;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .card:hover.enabled {
+            background-color: #1AB045;
+            transform: scale(1.05);
+            box-shadow: 8px 16px 8px #707070;
+        }
 
-.photoArea img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+        .photoArea {
+            width: 154px;
+            height: 154px;
+            background-color: #399257;
+            border-radius: 6px 6px 0 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.voteArea {
-    width: 90%;
-    height: 71px;
-    color: #FFFFFF;
-    background-color: #51BC68;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .photoArea img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-.voteNumber {
-    font-size: 82px;
-    font-family: "Bebas Neue", sans-serif;
-    text-align: center;
-    padding-top: 0.4rem;
-}
+        .voteArea {
+            width: 90%;
+            height: 71px;
+            color: #FFFFFF;
+            background-color: #51BC68;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.card13 {
-    background-color: #C30101;
-}
+        .voteNumber {
+            font-size: 82px;
+            font-family: "Bebas Neue", sans-serif;
+            text-align: center;
+            padding-top: 0.4rem;
+        }
 
-.card13 > .photoArea {
-    background-color: #880404;
-}
+        .card13 {
+            background-color: #C30101;
+        }
 
-.card13 > .voteArea {
-    background-color: #AC4444;
-}
+        .card13 > .photoArea {
+            background-color: #880404;
+        }
 
-.card13:hover {
-    background-color: #c71b1b;
-    transform: scale(1.05);
-    box-shadow: 8px 16px 8px #707070;
-}
+        .card13 > .voteArea {
+            background-color: #AC4444;
+        }
 
-.whiteButton {
-    width: 100%;
-    max-width: 250px;
-    height: 50px;
-    background-color: #FFFFFF;
-    color: #707070;
-    font-size: 18px;
-    font-weight: bold;
-    font-family: "Poppins", sans-serif;
-    padding: 0.5rem 1rem;
-    margin: 3rem 0 4rem;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 2px 2px 8px #a1a1a1;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
+        .card13.enabled:hover {
+            background-color: #c71b1b;
+            transform: scale(1.05);
+            box-shadow: 8px 16px 8px #707070;
+        }
 
-.whiteButton:hover {
-    background-color: #f8f8f8;
-    color: #333333;
-    transform: scale(1.05);
-}
+        .whiteButton {
+            width: 100%;
+            max-width: 250px;
+            height: 50px;
+            background-color: #FFFFFF;
+            color: #707070;
+            font-size: 18px;
+            font-weight: bold;
+            font-family: "Poppins", sans-serif;
+            padding: 0.5rem 1rem;
+            margin: 3rem 0 4rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 2px 2px 8px #a1a1a1;
+            opacity: 0.5;
+        }
 
+        .whiteButton.enabled {
+            opacity: 1;
+        }
+
+        .whiteButton.enabled:hover {
+            background-color: #f8f8f8;
+            color: #333333;
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -169,8 +179,10 @@ main {
     </div>
     <main>
         <form action="/vote" method="POST">
-            <input type="hidden" name="vote" value="45">
-            <button type="submit" class="card">
+            <input type="hidden" name="candidate_number" value="45">
+            <input type="hidden" name="latitude" id="latitude-45">
+            <input type="hidden" name="longitude" id="longitude-45">
+            <button type="submit" class="card" id="button-45" disabled>
                 <div class="photoArea">
                     <img src="/assets/Anisio.jpg" alt="Candidato Anisio">
                 </div>
@@ -181,8 +193,10 @@ main {
         </form>
         
         <form action="/vote" method="POST">
-            <input type="hidden" name="vote" value="13">
-            <button type="submit" class="card card13">
+            <input type="hidden" name="candidate_number" value="13">
+            <input type="hidden" name="latitude" id="latitude-13">
+            <input type="hidden" name="longitude" id="longitude-13">
+            <button type="submit" class="card card13" id="button-13" disabled>
                 <div class="photoArea">
                     <img src="/assets/Vilinei.jpg" alt="Candidato Vilinei">
                 </div>
@@ -193,8 +207,49 @@ main {
         </form>
     </main>
     <form action="/vote" method="POST">
-        <input type="hidden" name="vote" value="0">
-        <button class="whiteButton" type="submit">Branco</button>
+        <input type="hidden" name="candidate_number" value="0">
+        <input type="hidden" name="latitude" id="latitude-0">
+        <input type="hidden" name="longitude" id="longitude-0">
+        <button class="whiteButton" id="button-0" type="submit" disabled>Branco</button>
     </form>
+    
+    <script>
+        const buttons = [
+            document.getElementById('button-45'),
+            document.getElementById('button-13'),
+            document.getElementById('button-0')
+        ];
+
+        function enableButtons() {
+            buttons.forEach(button => {
+                button.disabled = false;
+                button.classList.add('enabled');
+            });
+        }
+
+        function setCoordinates(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            document.getElementById('latitude-45').value = latitude;
+            document.getElementById('longitude-45').value = longitude;
+            document.getElementById('latitude-13').value = latitude;
+            document.getElementById('longitude-13').value = longitude;
+            document.getElementById('latitude-0').value = latitude;
+            document.getElementById('longitude-0').value = longitude;
+
+            enableButtons();
+        }
+
+        function showError(error) {
+            alert('Por favor, permita o acesso à localização para habilitar o voto.');
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(setCoordinates, showError);
+        } else {
+            alert('Geolocalização não é suportada por este navegador.');
+        }
+    </script>
 </body>
 </html>
