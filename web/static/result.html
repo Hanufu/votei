@@ -3,10 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Voto Registrado</title>
+    <title>Resultado dos Votos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        p {
+            font-size: 18px;
+        }
+        .message {
+            background-color: #ffeb3b;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
-    <h1>Voto registrado com sucesso!</h1>
-    <p>Obrigado por participar da votação.</p>
+    <h1>Resultado dos Votos</h1>
+    {{ if .Message }}
+    <div class="message"><strong>{{ .Message }}</strong></div>
+    {{ end }}
+    <p>Votos em branco: {{ .BlankVotes }}</p>
+    <p>Votos no 45: {{ .Votes45 }}</p>
+    <p>Votos no 13: {{ .Votes13 }}</p>
 </body>
 </html>

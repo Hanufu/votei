@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votei</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&amp;display=swap" rel="stylesheet">
     <style>
         /* Seu estilo existente */
         * {
@@ -170,9 +170,37 @@
             color: #333333;
             transform: scale(1.05);
         }
+
+        /* Estilo para o botão de solicitar localização */
+        #request-location {
+            width: 200px;
+            height: 40px;
+            background-color: #007BFF; /* Azul padrão que combina com os tons da tela */
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 2px 2px 8px #a1a1a1;
+            margin: 2rem 0;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: none; /* Inicialmente escondido */
+        }
+
+        #request-location:hover {
+            background-color: #0056b3; /* Azul mais escuro para o hover */
+            transform: scale(1.05);
+        }
+
+        #request-location:disabled {
+            background-color: #0056b3; /* Mesmo azul para o estado desativado */
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
     </style>
 </head>
-<body>
+<body cz-shortcut-listen="true">
     <div class="header">
         <h1>Escolha SEU TIME</h1>
         <h2>Vote e saiba quem está na frente nesta disputa!</h2>
@@ -182,9 +210,9 @@
             <input type="hidden" name="candidate_number" value="45">
             <input type="hidden" name="latitude" id="latitude-45">
             <input type="hidden" name="longitude" id="longitude-45">
-            <button type="submit" class="card" id="button-45" disabled>
+            <button type="submit" class="card" id="button-45" disabled="">
                 <div class="photoArea">
-                    <img src="/assets/Anisio.jpg" alt="Candidato Anisio">
+                    <img src="/assets/Anisio.png" alt="Candidato Anisio">
                 </div>
                 <div class="voteArea">
                     <p class="voteNumber">45</p>
@@ -196,9 +224,9 @@
             <input type="hidden" name="candidate_number" value="13">
             <input type="hidden" name="latitude" id="latitude-13">
             <input type="hidden" name="longitude" id="longitude-13">
-            <button type="submit" class="card card13" id="button-13" disabled>
+            <button type="submit" class="card card13" id="button-13" disabled="">
                 <div class="photoArea">
-                    <img src="/assets/Vilinei.jpg" alt="Candidato Vilinei">
+                    <img src="/assets/Vilinei.png" alt="Candidato Vilinei">
                 </div>
                 <div class="voteArea">
                     <p class="voteNumber">13</p>
@@ -206,13 +234,16 @@
             </button>
         </form>
     </main>
+    
     <form action="/vote" method="POST">
         <input type="hidden" name="candidate_number" value="0">
         <input type="hidden" name="latitude" id="latitude-0">
         <input type="hidden" name="longitude" id="longitude-0">
-        <button class="whiteButton" id="button-0" type="submit" disabled>Branco</button>
+        <button class="whiteButton" id="button-0" type="submit" disabled="">Branco</button>
     </form>
     
+    <button id="request-location">Solicitar Localização</button>
+
     <script>
         const buttons = [
             document.getElementById('button-45'),
@@ -225,31 +256,49 @@
                 button.disabled = false;
                 button.classList.add('enabled');
             });
+            // Oculta o botão de solicitar localização
+            document.getElementById('request-location').style.display = 'none';
         }
 
-        function setCoordinates(position) {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-
-            document.getElementById('latitude-45').value = latitude;
-            document.getElementById('longitude-45').value = longitude;
-            document.getElementById('latitude-13').value = latitude;
-            document.getElementById('longitude-13').value = longitude;
-            document.getElementById('latitude-0').value = latitude;
-            document.getElementById('longitude-0').value = longitude;
-
-            enableButtons();
+        function showLocationButton() {
+            document.getElementById('request-location').style.display = 'block';
         }
 
-        function showError(error) {
-            alert('Por favor, permita o acesso à localização para habilitar o voto.');
+        function checkLocation() {
+            navigator.geolocation.getCurrentPosition(
+                () => {
+                    // Se a localização for obtida com sucesso, ativa os botões
+                    enableButtons();
+                },
+                () => {
+                    // Se a localização não for obtida, mostra o botão para solicitar localização
+                    showLocationButton();
+                }
+            );
         }
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(setCoordinates, showError);
-        } else {
-            alert('Geolocalização não é suportada por este navegador.');
-        }
+        document.getElementById('request-location').addEventListener('click', () => {
+            // Solicita a localização quando o botão é clicado
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    document.getElementById('latitude-45').value = latitude;
+                    document.getElementById('longitude-45').value = longitude;
+                    document.getElementById('latitude-13').value = latitude;
+                    document.getElementById('longitude-13').value = longitude;
+                    document.getElementById('latitude-0').value = latitude;
+                    document.getElementById('longitude-0').value = longitude;
+                    enableButtons();
+                },
+                () => {
+                    alert('Não foi possível obter a localização. Tente novamente.');
+                }
+            );
+        });
+
+        // Verifica a localização ao carregar a página
+        checkLocation();
     </script>
 </body>
 </html>
