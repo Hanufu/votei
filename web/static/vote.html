@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&amp;display=swap" rel="stylesheet">
     <style>
-        /* Seu estilo existente */
         * {
             margin: 0;
             padding: 0;
@@ -76,15 +75,9 @@
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             border: none;
             cursor: pointer;
-            opacity: 0.5;
         }
 
-        .card.enabled {
-            cursor: pointer;
-            opacity: 1;
-        }
-
-        .card:hover.enabled {
+        .card:hover {
             background-color: #1AB045;
             transform: scale(1.05);
             box-shadow: 8px 16px 8px #707070;
@@ -137,7 +130,7 @@
             background-color: #AC4444;
         }
 
-        .card13.enabled:hover {
+        .card13:hover {
             background-color: #c71b1b;
             transform: scale(1.05);
             box-shadow: 8px 16px 8px #707070;
@@ -158,14 +151,9 @@
             border-radius: 12px;
             cursor: pointer;
             box-shadow: 2px 2px 8px #a1a1a1;
-            opacity: 0.5;
         }
 
-        .whiteButton.enabled {
-            opacity: 1;
-        }
-
-        .whiteButton.enabled:hover {
+        .whiteButton:hover {
             background-color: #f8f8f8;
             color: #333333;
             transform: scale(1.05);
@@ -180,8 +168,6 @@
     <main>
         <form action="/vote" method="POST">
             <input type="hidden" name="candidate_number" value="45">
-            <input type="hidden" name="latitude" id="latitude-45">
-            <input type="hidden" name="longitude" id="longitude-45">
             <button type="submit" class="card" id="button-45">
                 <div class="photoArea">
                     <img src="/assets/Anisio.png" alt="Candidato Anisio">
@@ -194,8 +180,6 @@
         
         <form action="/vote" method="POST">
             <input type="hidden" name="candidate_number" value="13">
-            <input type="hidden" name="latitude" id="latitude-13">
-            <input type="hidden" name="longitude" id="longitude-13">
             <button type="submit" class="card card13" id="button-13">
                 <div class="photoArea">
                     <img src="/assets/Vilinei.png" alt="Candidato Vilinei">
@@ -209,9 +193,7 @@
     
     <form action="/vote" method="POST">
         <input type="hidden" name="candidate_number" value="0">
-        <input type="hidden" name="latitude" id="latitude-0">
-        <input type="hidden" name="longitude" id="longitude-0">
-        <button class="whiteButton" id="button-0" type="submit" >Branco</button>
+        <button class="whiteButton" id="button-0" type="submit">Branco</button>
     </form>
     
 </body>

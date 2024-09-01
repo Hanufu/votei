@@ -164,6 +164,18 @@ image {
     max-width: 151px;
     max-height: 154px;
 }
+button:disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+    box-shadow: none;
+    color: #ffffff;
+}
+
+button.disabled a {
+    color: #ffffff;
+    pointer-events: none; /* Desativa os links dentro dos botões desabilitados */
+}
+
 
     </style>
 </head>
@@ -179,9 +191,9 @@ image {
     </div>
     <div class="login">
         <p class="acessoCom">Acesse com:</p>
-        <button id="facebookButton"><a href="/vote" disabled="">Entrar com Facebook</a></button>
+        <button id="facebookButton"><a href="/vote" disabled>Entrar com Facebook</a></button>
         <br/>
-        <button id="googleButton"><a href="/vote" disabled=""><span>Entrar com Google</span></a></button>
+        <button id="googleButton"><a href="/vote" disabled><span>Entrar com Google</span></a></button>
         <br/>
         <button id="semLoginButton"><a href="/vote">Acesso sem Login</a></button>
     </div>
