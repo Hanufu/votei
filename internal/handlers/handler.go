@@ -50,7 +50,7 @@ func GenerateCookieID(c echo.Context) string {
 				Name:    "voter_id",
 				Value:   newID,
 				Path:    "/",
-				Expires: time.Now().Add(24 * time.Hour),
+				Expires: time.Now().Add(40 * 24 * time.Hour),
 			})
 			return newID
 		}
