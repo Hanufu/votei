@@ -36,9 +36,13 @@ func main() {
 	router.SetupRoutes(e)
 
 	// Usando HTTPS com os certificados autoassinados
-	err = e.StartTLS(":443", "cert.pem", "key.pem")
+	//err = e.StartTLS(":443", "cert.pem", "key.pem")
+	//if err != nil {
+	//	log.Fatalf("Erro ao iniciar o servidor HTTPS: %v", err)
+	//}
+
+	err = e.Start(":80")
 	if err != nil {
-		log.Fatalf("Erro ao iniciar o servidor HTTPS: %v", err)
+		log.Fatalf("Erro ao iniciar o servidor HTTP: %v", err)
 	}
 }
-
