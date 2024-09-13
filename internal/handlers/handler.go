@@ -176,6 +176,12 @@ func VoteHandler(c echo.Context) error {
 	latitude := c.FormValue("latitude")
 	longitude := c.FormValue("longitude")
 
+	// Verifique se o usuário já votou independentemente das coordenadas
+	if HasVoted(ip, userAgent, cookieID) {
+		return c.Redirect(http.StatusSeeOther, "/result?message=Você já votou antes! Seu voto já foi registrado e não será computado novamente.")
+	}
+
+	// Adicione a verificação das coordenadas apenas se o usuário não tiver votado
 	if !isValidCoordinate(latitude) || !isValidCoordinate(longitude) {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Coordenadas inválidas."})
 	}
@@ -189,10 +195,6 @@ func VoteHandler(c echo.Context) error {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Número do candidato inválido."})
 		}
-	}
-
-	if HasVoted(ip, userAgent, cookieID) {
-		return c.Redirect(http.StatusSeeOther, "/result?message=Você já votou antes! Seu voto já foi registrado e não será computado novamente.")
 	}
 
 	if HasVotedRecently(ip, userAgent, cookieID) {
