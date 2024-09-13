@@ -81,102 +81,104 @@ h2 {
 }
 
 button {
-    font-size: 18px;
-    padding: 0.5rem 1rem;
-    margin: 0.5rem;
-    border: none;
-    cursor: pointer;
-    width: 100%; 
-    max-width: 250px; 
-    height: 50px;
-    border-radius: 12px;
-    color: #FFFFFF;
-    font-weight: bold;
-    font-family: "Poppins", sans-serif;
-    box-shadow: 2px 2px 8px #a1a1a1;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-sizing: border-box;
-}
-button > a {
-    text-decoration: none;
-    color: #FFFFFF;
-}
+            font-size: 18px;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            max-width: 250px;
+            height: 50px;
+            border-radius: 12px;
+            color: #FFFFFF;
+            font-weight: bold;
+            font-family: "Poppins", sans-serif;
+            box-shadow: 2px 2px 8px #a1a1a1;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-sizing: border-box;
+            text-align: center;
+        }
 
-#facebookButton {
-    background-color: #0075FF;
-}
+        button > span {
+            text-decoration: none;
+            color: #FFFFFF;
+        }
 
-#facebookButton:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
+        #facebookButton {
+            background-color: #0075FF;
+        }
 
-#googleButton {
-    background-color: #FFFFFF;
-    color: transparent;
-    position: relative;
-}
+        #facebookButton:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
 
-#googleButton span {
-    background-image: linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
+        #googleButton {
+            background-color: #FFFFFF;
+            color: transparent;
+            position: relative;
+        }
 
-#googleButton:hover {
-    background-color: #f8f8f8;
-    transform: scale(1.05);
-}
+        #googleButton span {
+            background-image: linear-gradient(90deg, #4285F4, #34A853, #FBBC05, #EA4335);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
 
-#semLoginButton {
-    background-color: #8BCEE4;
-}
+        #googleButton:hover {
+            background-color: #f8f8f8;
+            transform: scale(1.05);
+        }
 
-#semLoginButton:hover {
-    background-color: #7ab2d3;
-    transform: scale(1.05);
-}
+        #semLoginButton {
+            background-color: #8BCEE4;
+        }
 
-.entrar-sem-login {
-    width: 100%;
-    max-width: 1200px;
-    text-align: left;
-    margin-top: 2rem;
-}
+        #semLoginButton:hover {
+            background-color: #7ab2d3;
+            transform: scale(1.05);
+        }
 
-.termosDeUso {
-    max-width: 90vw; 
-    font-weight: bold;
-    font-size: 16px;
-    color: #707070;
-    margin-top: 1rem;
-    text-align: center; 
-    padding-left: 2rem;
-    box-sizing: border-box; 
-}
+        .entrar-sem-login {
+            width: 100%;
+            max-width: 1200px;
+            text-align: left;
+            margin-top: 2rem;
+        }
 
-.termosDeUso a {
-    color: #707070;
-    text-decoration: underline;
-}
-image {
-    max-width: 151px;
-    max-height: 154px;
-}
-button:disabled {
-    background-color: #c0c0c0;
-    cursor: not-allowed;
-    box-shadow: none;
-    color: #ffffff;
-}
+        .termosDeUso {
+            max-width: 90vw;
+            font-weight: bold;
+            font-size: 16px;
+            color: #707070;
+            margin-top: 1rem;
+            text-align: center;
+            padding-left: 2rem;
+            box-sizing: border-box;
+        }
 
-button.disabled a {
-    color: #ffffff;
-    pointer-events: none; /* Desativa os links dentro dos botões desabilitados */
-}
+        .termosDeUso a {
+            color: #707070;
+            text-decoration: underline;
+        }
 
+        image {
+            max-width: 151px;
+            max-height: 154px;
+        }
 
+        button:disabled {
+            background-color: #c0c0c0;
+            cursor: not-allowed;
+            box-shadow: none;
+            color: #ffffff;
+        }
+
+        button.disabled span {
+            color: #ffffff;
+            pointer-events: none; /* Desativa os links dentro dos botões desabilitados */
+        }
     </style>
 </head>
 <body>
@@ -184,18 +186,16 @@ button.disabled a {
         <h1>VOTEI</h1>
         <h2 id="animatedText">
             <span class="typing-text">Entenda, avalie, vote.</span>
-            <span class="fixed-cursor">
-                
-            </span>
+            <span class="fixed-cursor"></span>
         </h2>
     </div>
     <div class="login">
         <p class="acessoCom">Acesse com:</p>
-        <button id="facebookButton" class="disabled" disabled><a href="/vote">Entrar com Facebook</a></button>
+        <button id="facebookButton" class="disabled" disabled><span>Entrar com Facebook</span></button>
         <br/>
-        <button id="googleButton" class="disabled" disabled><a href="/vote"><span>Entrar com Google</span></a></button>
+        <button id="googleButton" class="disabled" disabled><span>Entrar com Google</span></button>
         <br/>
-        <button id="semLoginButton"><a href="/vote">Acesso sem Login</a></button>
+        <button id="semLoginButton" onclick="window.location.href='/vote';"><span>Acesso sem Login</span></button>
     </div>
     <div class="entrar-sem-login">
         <p class="termosDeUso">
@@ -232,9 +232,8 @@ button.disabled a {
         document.addEventListener('DOMContentLoaded', () => {
             const typingText = document.querySelector('.typing-text');
             if (typingText) {
-                // Apaga e reescreve o texto somente se o JS estiver habilitado
                 const text = typingText.innerText;
-                typingText.innerText = ''; // Limpa o texto inicial
+                typingText.innerText = '';
                 typeWriter(typingText, text, 100, 1500);
             }
         });
