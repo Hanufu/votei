@@ -13,7 +13,7 @@ import (
 
 func main() {
 	var err error
-	database.DB, err = database.InitDB() // Inicializa o banco de dados
+	database.DB, err = database.InitDB()
 	if err != nil {
 		fmt.Println("Erro ao abrir o banco de dados:", err)
 		return
@@ -21,9 +21,8 @@ func main() {
 	defer database.DB.Close()
 
 	database.CreateVotesTable()
-	database.LoadVoteCounts() // Carregue a contagem de votos após criar a tabela
+	database.LoadVoteCounts()
 
-	// Carrega o template de resultados
 	config.ResultTemplate, err = template.ParseFiles(config.StaticPath + config.ResultFile)
 	if err != nil {
 		fmt.Println("Erro ao carregar o template de resultados:", err)

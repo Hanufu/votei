@@ -66,28 +66,15 @@ func HasVoted(ip string, userAgent string, cookieID string) bool {
 	query := `
 		SELECT COUNT(*) 
 		FROM votes 
-		WHERE ip_address = ? 
-			OR user_agent = ? 
-			OR cookie_id = ?`
-	if err := database.DB.QueryRow(query, ip, userAgent, cookieID).Scan(&count); err != nil {
+		WHERE (ip_address = ? AND user_agent = ?) 
+			OR (ip_address = ? AND cookie_id = ?) 
+			OR (user_agent = ? AND cookie_id = ?)`
+
+	if err := database.DB.QueryRow(query, ip, userAgent, ip, cookieID, userAgent, cookieID).Scan(&count); err != nil {
 		fmt.Println("Erro ao verificar votos:", err)
 		return false
 	}
-	return count > 0
-}
 
-func HasVotedRecently(ip string, userAgent string, cookieID string) bool {
-	var count int
-	query := `
-		SELECT COUNT(*) 
-		FROM votes 
-		WHERE (ip_address = ? OR user_agent = ? OR cookie_id = ?) 
-		  AND timestamp > ?`
-	oneDayAgo := time.Now().Add(-24 * time.Hour)
-	if err := database.DB.QueryRow(query, ip, userAgent, cookieID, oneDayAgo).Scan(&count); err != nil {
-		fmt.Println("Erro ao verificar votos recentes:", err)
-		return false
-	}
 	return count > 0
 }
 
@@ -195,10 +182,6 @@ func VoteHandler(c echo.Context) error {
 		if err != nil {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Número do candidato inválido."})
 		}
-	}
-
-	if HasVotedRecently(ip, userAgent, cookieID) {
-		return c.Redirect(http.StatusSeeOther, "/result?message=Você já votou recentemente! Espere 24 horas antes de votar novamente.")
 	}
 
 	vote := Vote{
