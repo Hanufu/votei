@@ -163,7 +163,7 @@
         #request-location {
             width: 200px;
             height: 40px;
-            background-color: #0056b3; /* Azul padrão que combina com os tons da tela */
+            background-color: #0056b3;
             color: #FFFFFF;
             font-size: 16px;
             font-weight: bold;
@@ -173,16 +173,18 @@
             box-shadow: 2px 2px 8px #a1a1a1;
             margin: 2rem 0;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            display: none; /* Inicialmente escondido */
+            display: none;
+            position: absolute;
+            bottom: 80px; /* Ajusta a posição para que o botão não fique muito abaixo */
         }
 
         #request-location:hover {
-            background-color: #1668c0; /* Azul mais escuro para o hover */
+            background-color: #1668c0;
             transform: scale(1.05);
         }
 
         #request-location:disabled {
-            background-color: #1c6abd; /* Mesmo azul para o estado desativado */
+            background-color: #1c6abd;
             opacity: 0.6;
             cursor: not-allowed;
         }
@@ -190,11 +192,20 @@
         /* Estilo preto e branco para cards desabilitados */
         .disabled-card {
             filter: grayscale(100%);
-            pointer-events: none; /* Remove a interatividade */
+            pointer-events: none;
         }
 
         .disabled-card img {
             filter: grayscale(100%);
+        }
+
+        /* Estilo para a mensagem de localização necessária */
+        .location-message {
+            color: #C30101;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 2rem 0;
+            display: none; /* Inicialmente escondido */
         }
     </style>
 </head>
@@ -234,6 +245,7 @@
         <button class="whiteButton disabled-card" id="button-0" type="submit" disabled="">Branco</button>
     </form>
     <button id="request-location">Solicitar Localização</button>
+    <p class="location-message">Para votar é necessário fornecer a localização para validar os votos!</p>
 
     <script>
         const buttons = [
@@ -241,13 +253,14 @@
             document.getElementById('button-13'),
             document.getElementById('button-0')
         ];
+        const locationMessage = document.querySelector('.location-message');
 
         function enableButtons() {
             buttons.forEach(button => {
                 button.disabled = false;
                 button.classList.remove('disabled-card');
             });
-            // Oculta o botão de solicitar localização
+            locationMessage.style.display = 'none'; // Esconde a mensagem quando a localização é concedida
             document.getElementById('request-location').style.display = 'none';
         }
 
@@ -255,25 +268,25 @@
             document.getElementById('request-location').style.display = 'block';
         }
 
+        function showLocationMessage() {
+            locationMessage.style.display = 'block';
+        }
+
         function checkLocation() {
             navigator.geolocation.getCurrentPosition(
                 () => {
-                    // Se a localização for obtida com sucesso, ativa os botões
                     enableButtons();
                 },
                 () => {
-                    // Se a localização não for obtida, mostra o botão para solicitar localização
                     showLocationButton();
+                    showLocationMessage();
                 }
             );
         }
 
-        document.getElementById('request-location').addEventListener('click', () => {
-            // Solicita a localização quando o botão é clicado
+        document.getElementById('request-location').addEventListener('click', function() {
             navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
+                () => {
                     enableButtons();
                 },
                 () => {
@@ -282,7 +295,6 @@
             );
         });
 
-        // Verifica a localização ao carregar a página
         window.onload = checkLocation;
     </script>
 </body>
