@@ -60,10 +60,32 @@ func GenerateCookieID(c echo.Context) string {
 	}
 	return cookie.Value
 }
-func HasVoted(identifier string) bool {
+
+func HasVoted(ip string, userAgent string, cookieID string) bool {
 	var count int
-	if err := database.DB.QueryRow("SELECT COUNT(*) FROM votes WHERE ip_address = ? OR cookie_id = ?", identifier, identifier).Scan(&count); err != nil {
+	query := `
+		SELECT COUNT(*) 
+		FROM votes 
+		WHERE ip_address = ? 
+			OR user_agent = ? 
+			OR cookie_id = ?`
+	if err := database.DB.QueryRow(query, ip, userAgent, cookieID).Scan(&count); err != nil {
 		fmt.Println("Erro ao verificar votos:", err)
+		return false
+	}
+	return count > 0
+}
+
+func HasVotedRecently(ip string, userAgent string, cookieID string) bool {
+	var count int
+	query := `
+		SELECT COUNT(*) 
+		FROM votes 
+		WHERE (ip_address = ? OR user_agent = ? OR cookie_id = ?) 
+		  AND timestamp > ?`
+	oneDayAgo := time.Now().Add(-24 * time.Hour)
+	if err := database.DB.QueryRow(query, ip, userAgent, cookieID, oneDayAgo).Scan(&count); err != nil {
+		fmt.Println("Erro ao verificar votos recentes:", err)
 		return false
 	}
 	return count > 0
@@ -131,7 +153,6 @@ func isValidCoordinate(coord string) bool {
 }
 
 func VoteHandler(c echo.Context) error {
-	identifier := GetUniqueIdentifier(c)
 	cookieID := GenerateCookieID(c)
 	ip := c.RealIP()
 	userAgent := c.Request().Header.Get("User-Agent")
@@ -170,8 +191,12 @@ func VoteHandler(c echo.Context) error {
 		}
 	}
 
-	if HasVoted(identifier) || HasVoted(cookieID) {
+	if HasVoted(ip, userAgent, cookieID) {
 		return c.Redirect(http.StatusSeeOther, "/result?message=Você já votou antes! Seu voto já foi registrado e não será computado novamente.")
+	}
+
+	if HasVotedRecently(ip, userAgent, cookieID) {
+		return c.Redirect(http.StatusSeeOther, "/result?message=Você já votou recentemente! Espere 24 horas antes de votar novamente.")
 	}
 
 	vote := Vote{
