@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -54,11 +55,11 @@ func GenerateCookieID(c echo.Context) string {
 			})
 			return newID
 		}
+		log.Printf("Erro ao obter cookie: %v", err)
 		return ""
 	}
 	return cookie.Value
 }
-
 func HasVoted(identifier string) bool {
 	var count int
 	if err := database.DB.QueryRow("SELECT COUNT(*) FROM votes WHERE ip_address = ? OR cookie_id = ?", identifier, identifier).Scan(&count); err != nil {
@@ -124,6 +125,11 @@ func ResultHandler(c echo.Context) error {
 	return nil
 }
 
+func isValidCoordinate(coord string) bool {
+	_, err := strconv.ParseFloat(coord, 64)
+	return err == nil
+}
+
 func VoteHandler(c echo.Context) error {
 	identifier := GetUniqueIdentifier(c)
 	cookieID := GenerateCookieID(c)
@@ -148,6 +154,10 @@ func VoteHandler(c echo.Context) error {
 	candidateNumber := c.FormValue("candidate_number")
 	latitude := c.FormValue("latitude")
 	longitude := c.FormValue("longitude")
+
+	if !isValidCoordinate(latitude) || !isValidCoordinate(longitude) {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Coordenadas inválidas."})
+	}
 
 	var candidateNumberInt int
 	if candidateNumber == "00" {
