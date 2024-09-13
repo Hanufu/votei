@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Votei</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&amp;display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -158,6 +158,44 @@
             color: #333333;
             transform: scale(1.05);
         }
+
+        /* Estilo para o botão de solicitar localização */
+        #request-location {
+            width: 200px;
+            height: 40px;
+            background-color: #0056b3; /* Azul padrão que combina com os tons da tela */
+            color: #FFFFFF;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 2px 2px 8px #a1a1a1;
+            margin: 2rem 0;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: none; /* Inicialmente escondido */
+        }
+
+        #request-location:hover {
+            background-color: #1668c0; /* Azul mais escuro para o hover */
+            transform: scale(1.05);
+        }
+
+        #request-location:disabled {
+            background-color: #1c6abd; /* Mesmo azul para o estado desativado */
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Estilo preto e branco para cards desabilitados */
+        .disabled-card {
+            filter: grayscale(100%);
+            pointer-events: none; /* Remove a interatividade */
+        }
+
+        .disabled-card img {
+            filter: grayscale(100%);
+        }
     </style>
 </head>
 <body cz-shortcut-listen="true">
@@ -168,7 +206,7 @@
     <main>
         <form action="/vote" method="POST">
             <input type="hidden" name="candidate_number" value="45">
-            <button type="submit" class="card" id="button-45">
+            <button type="submit" class="card disabled-card" id="button-45" disabled="">
                 <div class="photoArea">
                     <img src="/assets/Anisio.png" alt="Candidato Anisio">
                 </div>
@@ -180,7 +218,7 @@
         
         <form action="/vote" method="POST">
             <input type="hidden" name="candidate_number" value="13">
-            <button type="submit" class="card card13" id="button-13">
+            <button type="submit" class="card card13 disabled-card" id="button-13" disabled="">
                 <div class="photoArea">
                     <img src="/assets/Vilinei.png" alt="Candidato Vilinei">
                 </div>
@@ -193,8 +231,59 @@
     
     <form action="/vote" method="POST">
         <input type="hidden" name="candidate_number" value="0">
-        <button class="whiteButton" id="button-0" type="submit">Branco</button>
+        <button class="whiteButton disabled-card" id="button-0" type="submit" disabled="">Branco</button>
     </form>
-    
+    <button id="request-location">Solicitar Localização</button>
+
+    <script>
+        const buttons = [
+            document.getElementById('button-45'),
+            document.getElementById('button-13'),
+            document.getElementById('button-0')
+        ];
+
+        function enableButtons() {
+            buttons.forEach(button => {
+                button.disabled = false;
+                button.classList.remove('disabled-card');
+            });
+            // Oculta o botão de solicitar localização
+            document.getElementById('request-location').style.display = 'none';
+        }
+
+        function showLocationButton() {
+            document.getElementById('request-location').style.display = 'block';
+        }
+
+        function checkLocation() {
+            navigator.geolocation.getCurrentPosition(
+                () => {
+                    // Se a localização for obtida com sucesso, ativa os botões
+                    enableButtons();
+                },
+                () => {
+                    // Se a localização não for obtida, mostra o botão para solicitar localização
+                    showLocationButton();
+                }
+            );
+        }
+
+        document.getElementById('request-location').addEventListener('click', () => {
+            // Solicita a localização quando o botão é clicado
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    enableButtons();
+                },
+                () => {
+                    alert('Não foi possível obter a localização.');
+                }
+            );
+        });
+
+        // Verifica a localização ao carregar a página
+        window.onload = checkLocation;
+    </script>
 </body>
 </html>
