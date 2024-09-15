@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -201,4 +203,114 @@ func VoteHandler(c echo.Context) error {
 	LogVote(vote)
 
 	return c.Redirect(http.StatusSeeOther, "/result")
+}
+
+func GetEmailHandler(c echo.Context) error {
+	email := c.FormValue("email")
+
+	filePath := "../../database/email.txt"
+
+	dir := "../../database"
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.Mkdir(dir, 0755); err != nil {
+			fmt.Printf("Erro ao criar diretório: %s\n", err)
+			return c.String(http.StatusInternalServerError, "Erro ao criar diretório para salvar e-mail")
+		}
+	}
+
+	// Abrir ou criar o arquivo email.txt
+	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		fmt.Printf("Erro ao abrir o arquivo: %s\n", err)
+		return c.String(http.StatusInternalServerError, "Erro ao salvar e-mail")
+	}
+	defer file.Close()
+
+	// Escrever o e-mail no arquivo
+	if _, err := file.WriteString(email + "\n"); err != nil {
+		fmt.Printf("Erro ao escrever no arquivo: %s\n", err)
+		return c.String(http.StatusInternalServerError, "Erro ao salvar e-mail")
+	}
+
+	// Retornar a mensagem de confirmação
+	return c.HTML(http.StatusOK, `
+		<!DOCTYPE html>
+		<html lang="pt-br">
+		<head>
+			<meta charset="UTF-8">
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<title>Confirmação</title>
+			<style>
+				* {
+					margin: 0;
+					padding: 0;
+					box-sizing: border-box;
+				}
+				body {
+					width: 100%;
+					height: 100%;
+					font-family: "Poppins", sans-serif;
+					background-color: #F5F5DC;
+					padding: 20px;
+					display: flex;
+					justify-content: center;
+					flex-direction: column; 
+					align-items: center;
+					text-align: center;
+					margin-top: 10rem;
+				}
+				h1 {
+					font-family: "Bebas Neue", sans-serif;
+					font-size: 2.5rem;
+					color: #333;
+					margin-bottom: 20px;
+				}
+				p {
+					font-size: 1rem;
+					color: #555;
+					line-height: 1.6;
+					margin-bottom: 15px;
+				}
+				a {
+					color: #007BFF;
+					text-decoration: none;
+					font-weight: 500;
+				}
+				a:hover {
+					text-decoration: underline;
+				}
+			</style>
+		</head>
+		<body>
+			<h1>Obrigado!</h1>
+			<p>Te notificaremos assim que o sistema voltar.</p>
+			<a href="/">Voltar</a>
+		</body>
+		</html>
+	`)
+}
+
+func AdminLoginHandler(c echo.Context) error {
+	expectedUsername := "@votei!"
+	expectedPassword := "Eduard00"
+
+	inputUsername := c.FormValue("username")
+	inputPassword := c.FormValue("password")
+
+	if inputUsername == expectedUsername && inputPassword == expectedPassword {
+		return c.File(config.Dashboard)
+	}
+
+	return c.Redirect(http.StatusFound, "/admin")
+}
+
+func DownloadFileHandler(c echo.Context) error {
+	filename := c.Param("filename")
+	filePath := filepath.Join("../../database", filename)
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		return echo.NewHTTPError(http.StatusNotFound, "File not found")
+	}
+
+	return c.File(filePath)
 }

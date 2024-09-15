@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: "Poppins", sans-serif;
+            background-color: #F5F5DC;
+            padding: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #7B2CBF;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+            width: 200px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #5a2090;
+        }
+    </style>
+</head>
+<body>
+    <div class="button-container">
+        <a href="/download/votes.db" download="database.db">Baixar Database</a>
+        <a href="/download/email.txt" download="emails.txt">Baixar Lista de Emails</a>
+    </div>
+</body>
+</html>

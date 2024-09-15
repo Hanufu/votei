@@ -4,9 +4,12 @@ import "text/template"
 
 var (
 	StaticPath     = "./../../web/static/"
-	IndexFile      = "index.html"
-	VoteFile       = "vote.html"
-	TermosFile     = "termos-uso-privacidade.html"
-	ResultFile     = "result.html"
+	IndexFile      = StaticPath + "index.html"
+	VoteFile       = StaticPath + "vote.html"
+	TermosFile     = StaticPath + "termos-uso-privacidade.html"
+	ResultFile     = StaticPath + "result.html"
+	InfoFile       = StaticPath + "info.html"
+	AdminLogin     = StaticPath + "admin.html"
+	Dashboard      = StaticPath + "dashboard.html"
 	ResultTemplate *template.Template
 )
