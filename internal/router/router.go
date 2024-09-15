@@ -16,7 +16,6 @@ func SetupRoutes(e *echo.Echo) {
 	//e.GET("/result", handlers.ResultHandler)
 	e.GET("/admin", handlers.ServeFile(config.AdminLogin))
 	e.POST("/admin", handlers.AdminLoginHandler)
-
 	e.GET("/download/:filename", handlers.DownloadFileHandler)
 
 }
