@@ -24,10 +24,10 @@ func main() {
 	}()
 
 	// Cria a tabela de votos, se não existir
-	database.CreateVotesTable()
+	database.CreateVotesTable(database.DB)
 
 	// Carrega as contagens de votos
-	database.LoadVoteCounts()
+	database.LoadVoteCounts(database.DB)
 
 	// Carrega o template de resultados
 	config.ResultTemplate, err = template.ParseFiles(config.StaticPath + config.ResultFile)

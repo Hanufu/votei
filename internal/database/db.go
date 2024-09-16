@@ -18,6 +18,7 @@ var (
 	}{Counts: make(map[int]int)}
 )
 
+// Função para inicializar o banco de dados
 func InitDB() (*sql.DB, error) {
 	// Pega as credenciais do banco de dados a partir das variáveis de ambiente
 	dbUser := os.Getenv("DB_USER")
@@ -26,6 +27,11 @@ func InitDB() (*sql.DB, error) {
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
 
+	// Verifica se as variáveis de ambiente estão definidas
+	if dbUser == "" || dbPassword == "" || dbHost == "" || dbPort == "" || dbName == "" {
+		return nil, fmt.Errorf("uma ou mais variáveis de ambiente não estão definidas")
+	}
+
 	// Constrói a string de conexão utilizando as variáveis de ambiente
 	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s sslmode=disable port=%s",
 		dbUser, dbPassword, dbName, dbHost, dbPort)
@@ -33,7 +39,7 @@ func InitDB() (*sql.DB, error) {
 	// Abre a conexão com o banco de dados
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("erro ao abrir a conexão com o banco de dados: %w", err)
 	}
 
 	// Verifica se a conexão foi bem-sucedida
@@ -46,7 +52,8 @@ func InitDB() (*sql.DB, error) {
 	return db, nil
 }
 
-func CreateVotesTable() {
+// Função para criar a tabela de votos
+func CreateVotesTable(db *sql.DB) {
 	createVotesTable := `CREATE TABLE IF NOT EXISTS votes (
         id SERIAL PRIMARY KEY,
         ip_address TEXT,
@@ -61,14 +68,17 @@ func CreateVotesTable() {
         longitude TEXT
     );`
 
-	_, err := DB.Exec(createVotesTable)
+	_, err := db.Exec(createVotesTable)
 	if err != nil {
 		fmt.Println("Erro ao criar tabela de votos:", err)
+	} else {
+		fmt.Println("Tabela de votos criada ou já existe.")
 	}
 }
 
-func LoadVoteCounts() {
-	rows, err := DB.Query("SELECT candidate_number, COUNT(*) FROM votes GROUP BY candidate_number")
+// Função para carregar contagens de votos
+func LoadVoteCounts(db *sql.DB) {
+	rows, err := db.Query("SELECT candidate_number, COUNT(*) FROM votes GROUP BY candidate_number")
 	if err != nil {
 		fmt.Println("Erro ao carregar contagens de votos:", err)
 		return
@@ -86,4 +96,11 @@ func LoadVoteCounts() {
 		}
 		VoteCounts.Counts[candidateNumber] = count
 	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("Erro ao iterar sobre as linhas:", err)
+		return
+	}
+
+	fmt.Println("Contagens de votos carregadas com sucesso.")
 }
