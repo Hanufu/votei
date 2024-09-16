@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"text/template"
 
@@ -12,34 +11,43 @@ import (
 )
 
 func main() {
+	// Inicializa o banco de dados
 	var err error
 	database.DB, err = database.InitDB()
 	if err != nil {
-		fmt.Println("Erro ao abrir o banco de dados:", err)
-		return
+		log.Fatalf("Erro ao abrir o banco de dados: %v", err)
 	}
-	defer database.DB.Close()
+	defer func() {
+		if err := database.DB.Close(); err != nil {
+			log.Printf("Erro ao fechar o banco de dados: %v", err)
+		}
+	}()
 
+	// Cria a tabela de votos, se não existir
 	database.CreateVotesTable()
+
+	// Carrega as contagens de votos
 	database.LoadVoteCounts()
 
+	// Carrega o template de resultados
 	config.ResultTemplate, err = template.ParseFiles(config.StaticPath + config.ResultFile)
 	if err != nil {
-		fmt.Println("Erro ao carregar o template de resultados:", err)
-		return
+		log.Fatalf("Erro ao carregar o template de resultados: %v", err)
 	}
 
+	// Inicializa o Echo
 	e := echo.New()
 
 	// Configuração das rotas
 	router.SetupRoutes(e)
 
-	// Usando HTTPS com os certificados autoassinados
-	//err = e.StartTLS(":443", "cert.pem", "key.pem")
-	//if err != nil {
-	//	log.Fatalf("Erro ao iniciar o servidor HTTPS: %v", err)
-	//}
+	// Usando HTTPS com os certificados autoassinados (opcional)
+	// err = e.StartTLS(":443", "cert.pem", "key.pem")
+	// if err != nil {
+	// 	log.Fatalf("Erro ao iniciar o servidor HTTPS: %v", err)
+	// }
 
+	// Inicia o servidor HTTP
 	err = e.Start(":80")
 	if err != nil {
 		log.Fatalf("Erro ao iniciar o servidor HTTP: %v", err)

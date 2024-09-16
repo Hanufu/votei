@@ -3,9 +3,10 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"sync"
 
-	_ "modernc.org/sqlite"
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -18,27 +19,47 @@ var (
 )
 
 func InitDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite", "../../database/votes.db")
+	// Pega as credenciais do banco de dados a partir das variáveis de ambiente
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbHost := os.Getenv("DB_HOST")
+	dbPort := os.Getenv("DB_PORT")
+	dbName := os.Getenv("DB_NAME")
+
+	// Constrói a string de conexão utilizando as variáveis de ambiente
+	connStr := fmt.Sprintf("user=%s password=%s dbname=%s host=%s sslmode=disable port=%s",
+		dbUser, dbPassword, dbName, dbHost, dbPort)
+
+	// Abre a conexão com o banco de dados
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		return nil, err
 	}
+
+	// Verifica se a conexão foi bem-sucedida
+	err = db.Ping()
+	if err != nil {
+		return nil, fmt.Errorf("erro ao conectar ao banco de dados PostgreSQL: %w", err)
+	}
+
+	fmt.Println("Conectado ao banco de dados PostgreSQL!")
 	return db, nil
 }
 
 func CreateVotesTable() {
 	createVotesTable := `CREATE TABLE IF NOT EXISTS votes (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		ip_address TEXT,
-		user_agent TEXT,
-		cookie_id TEXT,
-		timestamp DATETIME,
-		referer TEXT,
-		language TEXT,
-		browser TEXT,
-		candidate_number INTEGER,
-		latitude TEXT,
-		longitude TEXT
-	);`
+        id SERIAL PRIMARY KEY,
+        ip_address TEXT,
+        user_agent TEXT,
+        cookie_id TEXT,
+        timestamp TIMESTAMPTZ,
+        referer TEXT,
+        language TEXT,
+        browser TEXT,
+        candidate_number INTEGER,
+        latitude TEXT,
+        longitude TEXT
+    );`
 
 	_, err := DB.Exec(createVotesTable)
 	if err != nil {
