@@ -68,9 +68,9 @@ func HasVoted(ip string, userAgent string, cookieID string) bool {
 	query := `
 		SELECT COUNT(*) 
 		FROM votes 
-		WHERE (ip_address = ? AND user_agent = ?) 
-			OR (ip_address = ? AND cookie_id = ?) 
-			OR (user_agent = ? AND cookie_id = ?)`
+		WHERE (ip_address = $1 AND user_agent = $2) 
+			OR (ip_address = $3 AND cookie_id = $4) 
+			OR (user_agent = $5 AND cookie_id = $6)`
 
 	if err := database.DB.QueryRow(query, ip, userAgent, ip, cookieID, userAgent, cookieID).Scan(&count); err != nil {
 		fmt.Println("Erro ao verificar votos:", err)
@@ -84,7 +84,7 @@ func RegisterVote(vote Vote) {
 	database.DBLock.Lock()
 	defer database.DBLock.Unlock()
 
-	_, err := database.DB.Exec("INSERT INTO votes (ip_address, user_agent, cookie_id, timestamp, referer, language, browser, candidate_number, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+	_, err := database.DB.Exec("INSERT INTO votes (ip_address, user_agent, cookie_id, timestamp, referer, language, browser, candidate_number, latitude, longitude) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
 		vote.IPAddress, vote.UserAgent, vote.CookieID, vote.Timestamp, vote.Referer, vote.Language, vote.Browser, vote.CandidateNumber, vote.Latitude, vote.Longitude)
 	if err != nil {
 		fmt.Println("Erro ao registrar voto:", err)
