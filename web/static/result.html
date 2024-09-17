@@ -6,7 +6,7 @@
     <title>Resultado dos Votos</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -18,7 +18,7 @@
             width: 100%;
             height: 100%;
             font-family: "Poppins", sans-serif;
-            background-color: #F5F5DC; /* Cor de fundo clara */
+            background-color: #F5F5DC;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -28,7 +28,7 @@
 
         h1 {
             padding-top: 2rem;
-            font-size: 6rem; /* Tamanho maior para desktop */
+            font-size: 6rem;
             font-family: "Bebas Neue", sans-serif;
             color: #333333;
             margin-bottom: 1rem;
@@ -36,19 +36,19 @@
 
         p {
             font-size: 1.2rem;
-            color: #333333; /* Cor escura para o texto */
-            text-align: left; /* Alinha o texto à esquerda */
+            color: #333333;
+            text-align: left;
             margin: 0.5rem 0;
-            max-width: 80%; /* Limita a largura máxima para melhor visualização */
+            max-width: 80%;
             width: 100%;
-            padding-left: 20px; /* Espaçamento à esquerda */
-            padding-right: 20px; /* Espaçamento à direita */
+            padding-left: 20px;
+            padding-right: 20px;
         }
 
         .message {
-            background-color: #8BCEE4; /* Cor de fundo do estilo dos botões */
-            color: #333333; /* Cor do texto */
-            padding: 8px; /* Reduz o padding */
+            background-color: #8BCEE4;
+            color: #333333;
+            padding: 8px;
             border-radius: 8px;
             margin-bottom: 20px;
             display: inline-block;
@@ -60,30 +60,27 @@
 
         canvas {
             max-width: 800px;
-            max-height: 600px; /* Limita a altura máxima do gráfico */
+            max-height: 600px;
             height: auto;
             margin: 20px 0;
         }
 
         @media (max-width: 600px) {
             h1 {
-                font-size: 4rem; /* Tamanho intermediário para dispositivos móveis */
+                font-size: 4rem;
             }
 
             p {
                 font-size: 1rem;
-                max-width: 100%; /* Garante que o texto não exceda a largura da tela em dispositivos menores */
-                padding-left: 10px; /* Reduz o padding em dispositivos menores */
-                padding-right: 10px; /* Reduz o padding em dispositivos menores */
+                max-width: 100%;
+                padding-left: 10px;
+                padding-right: 10px;
             }
 
             .message {
                 font-size: 0.9rem;
                 padding: 8px;
-                width: 80vw;
-            }
-            main {
-                width: 100vw;
+                width: 90vw;
             }
         }
     </style>
@@ -95,14 +92,12 @@
             <strong>{{ if .Message }}{{ .Message }}{{ end }}</strong>
         </div>
         <div>
-            <p>Votos em branco: {{ .BlankVotes }}</p>
-            <p>Votos no 45: {{ .Votes45 }}</p>
-            <p>Votos no 13: {{ .Votes13 }}</p>
+            <p>Votos em branco: "{{ .BlankVotes }}"</p>
+            <p>Votos no 45: "{{ .Votes45 }}"</p>
+            <p>Votos no 13: "{{ .Votes13 }}"</p>
         </div>
-        <!-- Canvas para o gráfico -->
         <canvas id="votesChart"></canvas>
     </main>
-    <!-- Adiciona a biblioteca Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -143,17 +138,16 @@
                             ticks: {
                                 callback: function(value) {
                                     if (value === 0) return '0';
-                                    return value.toLocaleString(); // Formata números com separador de milhar
+                                    return value.toLocaleString();
                                 }
                             },
-                            // Define o intervalo e o máximo dos valores no eixo Y
                             suggestedMin: 0,
                             suggestedMax: Math.max(
                                 "{{ .BlankVotes }}",
                                 "{{ .Votes45 }}",
                                 "{{ .Votes13 }}"
-                            ) * 1.1, // Adiciona um pouco mais de espaço no topo
-                            stepSize: 5000 // Ajusta o passo dos valores no eixo Y
+                            ) * 1.1,
+                            stepSize: 5000
                         }
                     }
                 }
