@@ -297,7 +297,7 @@
             document.getElementById('button-0')
         ];
         const locationMessage = document.querySelector('.location-message');
-
+    
         function enableButtons() {
             buttons.forEach(button => {
                 button.disabled = false;
@@ -306,50 +306,64 @@
             locationMessage.style.display = 'none'; // Esconde a mensagem quando a localização é concedida
             document.getElementById('request-location').style.display = 'none';
         }
-
+    
         function showLocationButton() {
             document.getElementById('request-location').style.display = 'block';
         }
-
+    
         function showLocationMessage() {
             locationMessage.style.display = 'block';
+            locationMessage.textContent = "Para votar, ative a localização nas configurações do navegador ou permita o acesso à localização!";
         }
-
+    
         function setLocation(lat, lon) {
             // Atualiza todos os campos de latitude e longitude na página
             document.querySelectorAll('.latitude').forEach(input => input.value = lat);
             document.querySelectorAll('.longitude').forEach(input => input.value = lon);
         }
-
+    
         function checkLocation() {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    // Captura a latitude e longitude e atualiza os campos ocultos
-                    setLocation(position.coords.latitude, position.coords.longitude);
-                    enableButtons();
-                },
-                () => {
-                    showLocationButton();
-                    showLocationMessage();
-                }
-            );
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        // Captura a latitude e longitude e atualiza os campos ocultos
+                        setLocation(position.coords.latitude, position.coords.longitude);
+                        enableButtons();
+                    },
+                    (error) => {
+                        // Detecta erro e lida com diferentes tipos de erro
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                alert("Permissão de localização negada. Por favor, ative a localização nas configurações.");
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                alert("Informação de localização indisponível.");
+                                break;
+                            case error.TIMEOUT:
+                                alert("A solicitação para obter a localização expirou.");
+                                break;
+                            case error.UNKNOWN_ERROR:
+                                alert("Ocorreu um erro desconhecido ao tentar obter a localização.");
+                                break;
+                        }
+                        showLocationButton();
+                        showLocationMessage();
+                    }
+                );
+            } else {
+                alert("Geolocalização não é suportada neste navegador.");
+                showLocationButton();
+                showLocationMessage();
+            }
         }
-
+    
         document.getElementById('request-location').addEventListener('click', function() {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    // Captura a latitude e longitude e atualiza os campos ocultos
-                    setLocation(position.coords.latitude, position.coords.longitude);
-                    enableButtons();
-                },
-                () => {
-                    alert('Não foi possível obter a localização.');
-                }
-            );
+            checkLocation();
         });
-
+    
         window.onload = checkLocation;
     </script>
+    
 </body>
 </body>
 </html>
