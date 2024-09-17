@@ -92,9 +92,9 @@
             <strong>{{ if .Message }}{{ .Message }}{{ end }}</strong>
         </div>
         <div>
-            <p>Votos em branco: "{{ .BlankVotes }}"</p>
-            <p>Votos no 45: "{{ .Votes45 }}"</p>
-            <p>Votos no 13: "{{ .Votes13 }}"</p>
+            <p>Votos em branco: {{ .BlankVotes }}</p>
+            <p>Votos no 45: {{ .Votes45 }}</p>
+            <p>Votos no 13: {{ .Votes13 }}</p>
         </div>
         <canvas id="votesChart"></canvas>
     </main>
