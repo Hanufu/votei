@@ -318,66 +318,69 @@
     <button id="request-location">Solicitar Localização</button>
     <button id="continue-without-location">Continuar sem localização</button>
     <script>
- document.addEventListener("DOMContentLoaded", function() {
-    const requestLocationBtn = document.getElementById("request-location");
-    const continueWithoutLocationBtn = document.getElementById("continue-without-location");
-    const locationMessage = document.querySelector(".location-message");
-    
-    function showLocationButtons() {
-        requestLocationBtn.style.display = "block";
-        continueWithoutLocationBtn.style.display = "none"; // Certifique-se de que o botão "Continuar sem localização" esteja oculto inicialmente
-        locationMessage.style.display = "block";
-    }
+        document.addEventListener("DOMContentLoaded", function() {
+            const requestLocationBtn = document.getElementById("request-location");
+            const continueWithoutLocationBtn = document.getElementById("continue-without-location");
+            const locationMessage = document.querySelector(".location-message");
+            
+            function showLocationButtons() {
+                requestLocationBtn.style.display = "block";
+                continueWithoutLocationBtn.style.display = "none"; 
+                locationMessage.style.display = "block";
+            }
 
-    function showContinueWithoutLocationButton() {
-        requestLocationBtn.style.display = "none";
-        continueWithoutLocationBtn.style.display = "block"; // Exibir o botão "Continuar sem localização"
-        locationMessage.style.display = "block";
-    }
+            function showContinueWithoutLocationButton() {
+                requestLocationBtn.style.display = "none";
+                continueWithoutLocationBtn.style.display = "block"; 
+                locationMessage.style.display = "block";
+            }
 
-    function hideLocationButtons() {
-        requestLocationBtn.style.display = "none";
-        continueWithoutLocationBtn.style.display = "none";
-        locationMessage.style.display = "none";
-    }
+            function hideLocationButtons() {
+                requestLocationBtn.style.display = "none";
+                continueWithoutLocationBtn.style.display = "none";
+                locationMessage.style.display = "none";
+            }
 
-    function handleLocationAccess() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    document.querySelector(".latitude").value = position.coords.latitude;
-                    document.querySelector(".longitude").value = position.coords.longitude;
-                    hideLocationButtons();
-                },
-                (error) => {
-                    console.log(error.message);
-                    showContinueWithoutLocationButton(); // Se falhar ao obter a localização, mostrar o botão "Continuar sem localização"
+            function handleLocationAccess() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            document.querySelector(".latitude").value = position.coords.latitude;
+                            document.querySelector(".longitude").value = position.coords.longitude;
+                            hideLocationButtons();
+                            enableButtons();
+                        },
+                        (error) => {
+                            console.log(error.message);
+                            showContinueWithoutLocationButton(); 
+                        }
+                    );
+                } else {
+                    showContinueWithoutLocationButton(); 
                 }
-            );
-        } else {
-            showContinueWithoutLocationButton(); // Se o navegador não suportar geolocalização, mostrar o botão "Continuar sem localização"
-        }
-    }
+            }
 
-    requestLocationBtn.addEventListener("click", handleLocationAccess);
+            function enableButtons() {
+                const cards = document.querySelectorAll(".card");
+                cards.forEach(card => {
+                    card.classList.remove("disabled-card");
+                    card.disabled = false; // Remove o atributo disabled
+                });
+                document.querySelector(".whiteButton").classList.remove("disabled-card");
+                document.querySelector(".whiteButton").disabled = false; // Remove o atributo disabled
+            }
 
-    continueWithoutLocationBtn.addEventListener("click", function() {
-        document.querySelector(".latitude").value = "0";
-        document.querySelector(".longitude").value = "0";
-        document.querySelector(".whiteButton").classList.remove("disabled-card");
-        hideLocationButtons();
-        
-        // Remove a classe disabled-card dos cartões
-        const cards = document.querySelectorAll(".card");
-        cards.forEach(card => {
-            card.classList.remove("disabled-card");
+            requestLocationBtn.addEventListener("click", handleLocationAccess);
+
+            continueWithoutLocationBtn.addEventListener("click", function() {
+                document.querySelector(".latitude").value = "0";
+                document.querySelector(".longitude").value = "0";
+                hideLocationButtons();
+                enableButtons();
+            });
+
+            showLocationButtons();
         });
-    });
-
-    // Inicialmente exibe o botão "Solicitar Localização"
-    showLocationButtons();
-});
-
     </script>
 </body>
 </html>
