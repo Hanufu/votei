@@ -47,7 +47,7 @@
             white-space: normal;
             max-width: 100%;
             line-height: 1.4;
-            margin: 0.5rem 0 2rem;
+            margin: 0.5rem
         }
 
         main {
@@ -75,12 +75,6 @@
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             border: none;
             cursor: pointer;
-        }
-
-        .card.disabled-card {
-            background-color: #C0C0C0;
-            box-shadow: 6px 12px 6px #868686;
-            cursor: not-allowed;
         }
 
         .card:hover {
@@ -159,19 +153,13 @@
             box-shadow: 2px 2px 8px #a1a1a1;
         }
 
-        .whiteButton.disabled-card {
-            background-color: #C0C0C0;
-            color: #707070;
-            box-shadow: 2px 2px 8px #a1a1a1;
-            cursor: not-allowed;
-        }
-
         .whiteButton:hover {
             background-color: #f8f8f8;
             color: #333333;
             transform: scale(1.05);
         }
 
+        /* Estilo para o botão de solicitar localização */
         #request-location {
             width: 200px;
             height: 40px;
@@ -187,7 +175,7 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
             display: none;
             position: absolute;
-            bottom: 100px;
+            bottom: 8rem;
         }
 
         #request-location:hover {
@@ -201,35 +189,48 @@
             cursor: not-allowed;
         }
 
+        /* Estilo para o botão de continuar sem localização */
         #continue-without-location {
             width: 200px;
             height: 40px;
-            background-color: #FFC107;
-            color: #333333;
+            background-color: #FFC107; /* Amarelo não tão claro */
+            color: #000000; /* Letras pretas */
             font-size: 16px;
             font-weight: bold;
             border: none;
             border-radius: 12px;
             cursor: pointer;
             box-shadow: 2px 2px 8px #a1a1a1;
-            margin: 1rem 0;
-            display: none;
+            margin: 2rem 0;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            display: none;
             position: absolute;
-            bottom: 60px;
+            bottom: 8rem;
         }
 
         #continue-without-location:hover {
-            background-color: #ffca28;
+            background-color: #e0a800;
             transform: scale(1.05);
         }
 
+        /* Estilo preto e branco para cards desabilitados */
+        .disabled-card {
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+
+        .disabled-card img {
+            filter: grayscale(100%);
+        }
+
+        /* Estilo para a mensagem de localização necessária */
         .location-message {
             color: #C30101;
             font-size: 14px;
             font-weight: bold;
-            margin: 2rem 1rem;
-            display: none;
+            margin: 1rem 1rem;
+            display: none; 
+            text-align: justify;
         }
 
         @media (max-width: 425px) {
@@ -241,6 +242,12 @@
             .photoArea {
                 width: 120px;
                 height: 120px;
+            }
+
+            .photoArea img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
             }
 
             .voteArea {
@@ -261,19 +268,23 @@
                 column-gap: 0.5rem;
             }
         }
+
     </style>
 </head>
-<body>
+<body cz-shortcut-listen="true">
     <div class="header">
         <h1>Escolha SEU TIME</h1>
         <h2>Vote e saiba quem está na frente nesta disputa!</h2>
     </div>
+    <p class="location-message">
+        A localização é essencial para validar os votos futuramente. Se optar por continuar sem a localização, é provável que sua escolha não seja computada corretamente.
+    </p>
     <main>
         <form action="/vote" method="POST">
             <input type="hidden" name="candidate_number" value="45">
             <input type="hidden" name="latitude" class="latitude" value="">
             <input type="hidden" name="longitude" class="longitude" value="">
-            <button type="submit" class="card disabled-card" id="button-45" disabled>
+            <button type="submit" class="card disabled-card" id="button-45" disabled="">
                 <div class="photoArea">
                     <img src="/assets/Anisio.png" alt="Candidato Anisio">
                 </div>
@@ -287,69 +298,86 @@
             <input type="hidden" name="candidate_number" value="13">
             <input type="hidden" name="latitude" class="latitude" value="">
             <input type="hidden" name="longitude" class="longitude" value="">
-            <button type="submit" class="card card13 disabled-card" id="button-13" disabled>
+            <button type="submit" class="card card13 disabled-card" id="button-13" disabled="">
                 <div class="photoArea">
-                    <img src="/assets/Edna.png" alt="Candidata Edna">
+                    <img src="/assets/Vilinei.png" alt="Candidato Vilinei">
                 </div>
                 <div class="voteArea">
                     <p class="voteNumber">13</p>
                 </div>
             </button>
         </form>
-
-        <button id="request-location" disabled>Ativar Localização</button>
-        <button id="continue-without-location">Continuar sem Localização</button>
-        <p class="location-message" id="location-message">Por favor, ative sua localização para votar.</p>
     </main>
 
+    <form action="/vote" method="POST">
+        <input type="hidden" name="candidate_number" value="0">
+        <input type="hidden" name="latitude" class="latitude" value="">
+        <input type="hidden" name="longitude" class="longitude" value="">
+        <button class="whiteButton disabled-card" id="button-0" type="submit" disabled="">Branco</button>
+    </form>
+    <button id="request-location">Solicitar Localização</button>
+    <button id="continue-without-location">Continuar sem localização</button>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const locationButton = document.getElementById('request-location');
-            const continueButton = document.getElementById('continue-without-location');
-            const locationMessage = document.getElementById('location-message');
-            const latitudeInputs = document.querySelectorAll('.latitude');
-            const longitudeInputs = document.querySelectorAll('.longitude');
-            const cards = document.querySelectorAll('.card');
+ document.addEventListener("DOMContentLoaded", function() {
+    const requestLocationBtn = document.getElementById("request-location");
+    const continueWithoutLocationBtn = document.getElementById("continue-without-location");
+    const locationMessage = document.querySelector(".location-message");
+    
+    function showLocationButtons() {
+        requestLocationBtn.style.display = "block";
+        continueWithoutLocationBtn.style.display = "none"; // Certifique-se de que o botão "Continuar sem localização" esteja oculto inicialmente
+        locationMessage.style.display = "block";
+    }
 
-            // Simula a ativação da localização
-            let locationEnabled = false;
+    function showContinueWithoutLocationButton() {
+        requestLocationBtn.style.display = "none";
+        continueWithoutLocationBtn.style.display = "block"; // Exibir o botão "Continuar sem localização"
+        locationMessage.style.display = "block";
+    }
 
-            function checkLocation() {
-                if (locationEnabled) {
-                    locationButton.style.display = 'none';
-                    continueButton.style.display = 'none';
-                    locationMessage.style.display = 'none';
+    function hideLocationButtons() {
+        requestLocationBtn.style.display = "none";
+        continueWithoutLocationBtn.style.display = "none";
+        locationMessage.style.display = "none";
+    }
 
-                    latitudeInputs.forEach(input => input.value = '10.0'); // Exemplo de latitude
-                    longitudeInputs.forEach(input => input.value = '20.0'); // Exemplo de longitude
-
-                    cards.forEach(card => card.classList.remove('disabled-card'));
-                    cards.forEach(card => card.disabled = false);
-                } else {
-                    locationButton.style.display = 'block';
-                    continueButton.style.display = 'block';
-                    locationMessage.style.display = 'block';
-
-                    latitudeInputs.forEach(input => input.value = '');
-                    longitudeInputs.forEach(input => input.value = '');
-
-                    cards.forEach(card => card.classList.add('disabled-card'));
-                    cards.forEach(card => card.disabled = true);
+    function handleLocationAccess() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    document.querySelector(".latitude").value = position.coords.latitude;
+                    document.querySelector(".longitude").value = position.coords.longitude;
+                    hideLocationButtons();
+                },
+                (error) => {
+                    console.log(error.message);
+                    showContinueWithoutLocationButton(); // Se falhar ao obter a localização, mostrar o botão "Continuar sem localização"
                 }
-            }
+            );
+        } else {
+            showContinueWithoutLocationButton(); // Se o navegador não suportar geolocalização, mostrar o botão "Continuar sem localização"
+        }
+    }
 
-            locationButton.addEventListener('click', function () {
-                locationEnabled = true;
-                checkLocation();
-            });
+    requestLocationBtn.addEventListener("click", handleLocationAccess);
 
-            continueButton.addEventListener('click', function () {
-                locationEnabled = false;
-                checkLocation();
-            });
-
-            checkLocation();
+    continueWithoutLocationBtn.addEventListener("click", function() {
+        document.querySelector(".latitude").value = "0";
+        document.querySelector(".longitude").value = "0";
+        document.querySelector(".whiteButton").classList.remove("disabled-card");
+        hideLocationButtons();
+        
+        // Remove a classe disabled-card dos cartões
+        const cards = document.querySelectorAll(".card");
+        cards.forEach(card => {
+            card.classList.remove("disabled-card");
         });
+    });
+
+    // Inicialmente exibe o botão "Solicitar Localização"
+    showLocationButtons();
+});
+
     </script>
 </body>
 </html>
