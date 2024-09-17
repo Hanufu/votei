@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
     <style>
-               * {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -75,6 +75,12 @@
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             border: none;
             cursor: pointer;
+        }
+
+        .card.disabled-card {
+            background-color: #C0C0C0;
+            box-shadow: 6px 12px 6px #868686;
+            cursor: not-allowed;
         }
 
         .card:hover {
@@ -151,6 +157,13 @@
             border-radius: 12px;
             cursor: pointer;
             box-shadow: 2px 2px 8px #a1a1a1;
+        }
+
+        .whiteButton.disabled-card {
+            background-color: #C0C0C0;
+            color: #707070;
+            box-shadow: 2px 2px 8px #a1a1a1;
+            cursor: not-allowed;
         }
 
         .whiteButton:hover {
@@ -276,104 +289,67 @@
             <input type="hidden" name="longitude" class="longitude" value="">
             <button type="submit" class="card card13 disabled-card" id="button-13" disabled>
                 <div class="photoArea">
-                    <img src="/assets/Vilinei.png" alt="Candidato Vilinei">
+                    <img src="/assets/Edna.png" alt="Candidata Edna">
                 </div>
                 <div class="voteArea">
                     <p class="voteNumber">13</p>
                 </div>
             </button>
         </form>
+
+        <button id="request-location" disabled>Ativar Localização</button>
+        <button id="continue-without-location">Continuar sem Localização</button>
+        <p class="location-message" id="location-message">Por favor, ative sua localização para votar.</p>
     </main>
 
-    <form action="/vote" method="POST">
-        <input type="hidden" name="candidate_number" value="0">
-        <input type="hidden" name="latitude" class="latitude" value="">
-        <input type="hidden" name="longitude" class="longitude" value="">
-        <button class="whiteButton disabled-card" id="button-0" type="submit" disabled>Branco</button>
-    </form>
-
-    <button id="request-location">Solicitar Localização</button>
-    <button id="continue-without-location">Continuar sem Localização</button>
-    <p class="location-message">Para votar é necessário fornecer a localização para validar os votos!</p>
-
     <script>
-        const buttons = [
-            document.getElementById('button-45'),
-            document.getElementById('button-13'),
-            document.getElementById('button-0')
-        ];
-        const locationMessage = document.querySelector('.location-message');
-        const requestLocationButton = document.getElementById('request-location');
-        const continueWithoutLocationButton = document.getElementById('continue-without-location');
-    
-        function enableButtons() {
-            buttons.forEach(button => {
-                button.disabled = false;
-                button.classList.remove('disabled-card');
-            });
-            locationMessage.style.display = 'none'; 
-            requestLocationButton.style.display = 'none';
-            continueWithoutLocationButton.style.display = 'none';
-        }
-    
-        function showLocationButton() {
-            requestLocationButton.style.display = 'block';
-        }
-    
-        function showLocationMessage() {
-            locationMessage.style.display = 'block';
-            locationMessage.textContent = "Para votar, ative a localização nas configurações do navegador ou permita o acesso à localização!";
-        }
-    
-        function setLocation(lat, lon) {
-            document.querySelectorAll('.latitude').forEach(input => input.value = lat);
-            document.querySelectorAll('.longitude').forEach(input => input.value = lon);
-        }
-    
-        function checkLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        setLocation(position.coords.latitude, position.coords.longitude);
-                        enableButtons();
-                    },
-                    (error) => {
-                        switch (error.code) {
-                            case error.PERMISSION_DENIED:
-                                alert("Permissão de localização negada. Por favor, ative a localização nas configurações.");
-                                break;
-                            case error.POSITION_UNAVAILABLE:
-                                alert("Informação de localização indisponível.");
-                                break;
-                            case error.TIMEOUT:
-                                alert("A solicitação para obter a localização expirou.");
-                                break;
-                            case error.UNKNOWN_ERROR:
-                                alert("Ocorreu um erro desconhecido ao tentar obter a localização.");
-                                break;
-                        }
-                        showLocationButton();
-                        showLocationMessage();
-                        continueWithoutLocationButton.style.display = 'block';
-                    }
-                );
-            } else {
-                alert("Geolocalização não é suportada neste navegador.");
-                showLocationButton();
-                showLocationMessage();
-                continueWithoutLocationButton.style.display = 'block';
+        document.addEventListener('DOMContentLoaded', function () {
+            const locationButton = document.getElementById('request-location');
+            const continueButton = document.getElementById('continue-without-location');
+            const locationMessage = document.getElementById('location-message');
+            const latitudeInputs = document.querySelectorAll('.latitude');
+            const longitudeInputs = document.querySelectorAll('.longitude');
+            const cards = document.querySelectorAll('.card');
+
+            // Simula a ativação da localização
+            let locationEnabled = false;
+
+            function checkLocation() {
+                if (locationEnabled) {
+                    locationButton.style.display = 'none';
+                    continueButton.style.display = 'none';
+                    locationMessage.style.display = 'none';
+
+                    latitudeInputs.forEach(input => input.value = '10.0'); // Exemplo de latitude
+                    longitudeInputs.forEach(input => input.value = '20.0'); // Exemplo de longitude
+
+                    cards.forEach(card => card.classList.remove('disabled-card'));
+                    cards.forEach(card => card.disabled = false);
+                } else {
+                    locationButton.style.display = 'block';
+                    continueButton.style.display = 'block';
+                    locationMessage.style.display = 'block';
+
+                    latitudeInputs.forEach(input => input.value = '');
+                    longitudeInputs.forEach(input => input.value = '');
+
+                    cards.forEach(card => card.classList.add('disabled-card'));
+                    cards.forEach(card => card.disabled = true);
+                }
             }
-        }
-    
-        document.getElementById('request-location').addEventListener('click', function() {
+
+            locationButton.addEventListener('click', function () {
+                locationEnabled = true;
+                checkLocation();
+            });
+
+            continueButton.addEventListener('click', function () {
+                locationEnabled = false;
+                checkLocation();
+            });
+
             checkLocation();
         });
-
-        document.getElementById('continue-without-location').addEventListener('click', function() {
-            enableButtons();
-        });
-    
-        window.onload = checkLocation;
     </script>
 </body>
 </html>
